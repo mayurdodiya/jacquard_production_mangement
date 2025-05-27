@@ -13,6 +13,12 @@ import EmployeeLayout from "@/components/layout/EmployeeLayout";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
 import CompanyDashboard from "@/pages/company/CompanyDashboard";
 import EmployeeDashboard from "@/pages/employee/EmployeeDashboard";
+import StockManagement from "@/pages/company/StockManagement";
+import EmployeeManagement from "@/pages/company/EmployeeManagement";
+import OrderManagement from "@/pages/company/OrderManagement";
+import ProductionSchedule from "@/pages/company/ProductionSchedule";
+import CompanyReports from "@/pages/company/CompanyReports";
+import CompanySettings from "@/pages/company/CompanySettings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -44,6 +50,12 @@ const App = () => (
               </ProtectedRoute>
             }>
               <Route index element={<CompanyDashboard />} />
+              <Route path="employees" element={<EmployeeManagement />} />
+              <Route path="stock" element={<StockManagement />} />
+              <Route path="orders" element={<OrderManagement />} />
+              <Route path="production" element={<ProductionSchedule />} />
+              <Route path="reports" element={<CompanyReports />} />
+              <Route path="settings" element={<CompanySettings />} />
             </Route>
             
             {/* Employee Routes */}
