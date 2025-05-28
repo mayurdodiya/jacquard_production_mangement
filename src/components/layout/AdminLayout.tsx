@@ -4,12 +4,10 @@ import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
-  Users, 
-  Building2, 
-  Settings, 
-  BarChart3, 
-  LogOut,
-  Home
+  Home,
+  Building2,
+  User,
+  LogOut
 } from 'lucide-react';
 
 const AdminLayout = () => {
@@ -23,10 +21,8 @@ const AdminLayout = () => {
 
   const menuItems = [
     { icon: Home, label: 'Dashboard', path: '/admin' },
-    { icon: Users, label: 'User Management', path: '/admin/users' },
-    { icon: Building2, label: 'Company Management', path: '/admin/companies' },
-    { icon: BarChart3, label: 'Reports', path: '/admin/reports' },
-    { icon: Settings, label: 'Settings', path: '/admin/settings' },
+    { icon: Building2, label: 'Companies', path: '/admin/companies' },
+    { icon: User, label: 'Profile', path: '/admin/profile' },
   ];
 
   return (

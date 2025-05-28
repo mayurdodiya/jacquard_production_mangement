@@ -4,14 +4,15 @@ import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
-  Clock, 
-  User, 
-  ShoppingCart, 
-  Calendar,
-  MessageSquare,
+  Home,
+  User,
+  ShoppingCart,
+  Package,
   Settings,
-  LogOut,
-  Home
+  Calendar,
+  Factory,
+  Clock,
+  LogOut
 } from 'lucide-react';
 
 const EmployeeLayout = () => {
@@ -25,19 +26,20 @@ const EmployeeLayout = () => {
 
   const menuItems = [
     { icon: Home, label: 'Dashboard', path: '/employee' },
-    { icon: Clock, label: 'Attendance', path: '/employee/attendance' },
     { icon: User, label: 'Profile', path: '/employee/profile' },
     { icon: ShoppingCart, label: 'Orders', path: '/employee/orders' },
-    { icon: Calendar, label: 'Schedule', path: '/employee/schedule' },
-    { icon: MessageSquare, label: 'Messages', path: '/employee/messages' },
-    { icon: Settings, label: 'Settings', path: '/employee/settings' },
+    { icon: Package, label: 'Stock', path: '/employee/stock' },
+    { icon: Settings, label: 'Machines', path: '/employee/machines' },
+    { icon: Calendar, label: 'Programmes', path: '/employee/programmes' },
+    { icon: Factory, label: 'Production', path: '/employee/production' },
+    { icon: Clock, label: 'Attendance', path: '/employee/attendance' },
   ];
 
   return (
     <div className="min-h-screen flex bg-gray-100">
       <aside className="w-64 bg-white shadow-md">
         <div className="p-6">
-          <h1 className="text-2xl font-bold text-gray-800">Employee Portal</h1>
+          <h1 className="text-2xl font-bold text-gray-800">Employee Panel</h1>
         </div>
         <nav className="mt-6">
           {menuItems.map((item) => (

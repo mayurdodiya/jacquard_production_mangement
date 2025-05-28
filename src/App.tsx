@@ -10,15 +10,34 @@ import LoginForm from "@/components/auth/LoginForm";
 import AdminLayout from "@/components/layout/AdminLayout";
 import CompanyLayout from "@/components/layout/CompanyLayout";
 import EmployeeLayout from "@/components/layout/EmployeeLayout";
+
+// Admin Pages
 import AdminDashboard from "@/pages/admin/AdminDashboard";
+import AdminCompanies from "@/pages/admin/AdminCompanies";
+import AdminProfile from "@/pages/admin/AdminProfile";
+
+// Company Pages
 import CompanyDashboard from "@/pages/company/CompanyDashboard";
-import EmployeeDashboard from "@/pages/employee/EmployeeDashboard";
-import StockManagement from "@/pages/company/StockManagement";
+import CompanyProfile from "@/pages/company/CompanyProfile";
 import EmployeeManagement from "@/pages/company/EmployeeManagement";
-import OrderManagement from "@/pages/company/OrderManagement";
-import ProductionSchedule from "@/pages/company/ProductionSchedule";
-import CompanyReports from "@/pages/company/CompanyReports";
-import CompanySettings from "@/pages/company/CompanySettings";
+import PurchaseOrders from "@/pages/company/PurchaseOrders";
+import StockManagement from "@/pages/company/StockManagement";
+import CustomerManagement from "@/pages/company/CustomerManagement";
+import ProductionManagement from "@/pages/company/ProductionManagement";
+import MachineManagement from "@/pages/company/MachineManagement";
+import ProgrammeManagement from "@/pages/company/ProgrammeManagement";
+import ActivityHistory from "@/pages/company/ActivityHistory";
+
+// Employee Pages
+import EmployeeDashboard from "@/pages/employee/EmployeeDashboard";
+import EmployeeProfile from "@/pages/employee/EmployeeProfile";
+import EmployeeOrders from "@/pages/employee/EmployeeOrders";
+import EmployeeStock from "@/pages/employee/EmployeeStock";
+import EmployeeMachines from "@/pages/employee/EmployeeMachines";
+import EmployeeProgrammes from "@/pages/employee/EmployeeProgrammes";
+import EmployeeProduction from "@/pages/employee/EmployeeProduction";
+import EmployeeAttendance from "@/pages/employee/EmployeeAttendance";
+
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -41,6 +60,8 @@ const App = () => (
               </ProtectedRoute>
             }>
               <Route index element={<AdminDashboard />} />
+              <Route path="companies" element={<AdminCompanies />} />
+              <Route path="profile" element={<AdminProfile />} />
             </Route>
             
             {/* Company Routes */}
@@ -50,12 +71,15 @@ const App = () => (
               </ProtectedRoute>
             }>
               <Route index element={<CompanyDashboard />} />
+              <Route path="profile" element={<CompanyProfile />} />
               <Route path="employees" element={<EmployeeManagement />} />
+              <Route path="purchase-orders" element={<PurchaseOrders />} />
               <Route path="stock" element={<StockManagement />} />
-              <Route path="orders" element={<OrderManagement />} />
-              <Route path="production" element={<ProductionSchedule />} />
-              <Route path="reports" element={<CompanyReports />} />
-              <Route path="settings" element={<CompanySettings />} />
+              <Route path="customers" element={<CustomerManagement />} />
+              <Route path="production" element={<ProductionManagement />} />
+              <Route path="machines" element={<MachineManagement />} />
+              <Route path="programmes" element={<ProgrammeManagement />} />
+              <Route path="activity" element={<ActivityHistory />} />
             </Route>
             
             {/* Employee Routes */}
@@ -65,6 +89,13 @@ const App = () => (
               </ProtectedRoute>
             }>
               <Route index element={<EmployeeDashboard />} />
+              <Route path="profile" element={<EmployeeProfile />} />
+              <Route path="orders" element={<EmployeeOrders />} />
+              <Route path="stock" element={<EmployeeStock />} />
+              <Route path="machines" element={<EmployeeMachines />} />
+              <Route path="programmes" element={<EmployeeProgrammes />} />
+              <Route path="production" element={<EmployeeProduction />} />
+              <Route path="attendance" element={<EmployeeAttendance />} />
             </Route>
             
             <Route path="*" element={<NotFound />} />

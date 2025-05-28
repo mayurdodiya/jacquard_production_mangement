@@ -4,14 +4,17 @@ import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
+  Home,
+  User,
   Users, 
+  ShoppingCart,
   Package, 
-  ShoppingCart, 
-  Calendar,
-  BarChart3,
+  UserCheck,
+  Factory,
   Settings,
-  LogOut,
-  Home
+  Calendar,
+  Activity,
+  LogOut
 } from 'lucide-react';
 
 const CompanyLayout = () => {
@@ -25,12 +28,15 @@ const CompanyLayout = () => {
 
   const menuItems = [
     { icon: Home, label: 'Dashboard', path: '/company' },
-    { icon: Users, label: 'Employee Management', path: '/company/employees' },
-    { icon: Package, label: 'Stock Management', path: '/company/stock' },
-    { icon: ShoppingCart, label: 'Order Management', path: '/company/orders' },
-    { icon: Calendar, label: 'Production Schedule', path: '/company/production' },
-    { icon: BarChart3, label: 'Reports', path: '/company/reports' },
-    { icon: Settings, label: 'Settings', path: '/company/settings' },
+    { icon: User, label: 'Profile', path: '/company/profile' },
+    { icon: Users, label: 'Employees', path: '/company/employees' },
+    { icon: ShoppingCart, label: 'Purchase Orders', path: '/company/purchase-orders' },
+    { icon: Package, label: 'Stock', path: '/company/stock' },
+    { icon: UserCheck, label: 'Customers', path: '/company/customers' },
+    { icon: Factory, label: 'Production', path: '/company/production' },
+    { icon: Settings, label: 'Machines', path: '/company/machines' },
+    { icon: Calendar, label: 'Programmes', path: '/company/programmes' },
+    { icon: Activity, label: 'Activity History', path: '/company/activity' },
   ];
 
   return (
