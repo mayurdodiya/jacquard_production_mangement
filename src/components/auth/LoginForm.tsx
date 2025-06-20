@@ -20,7 +20,16 @@ const LoginForm = () => {
     setIsLoading(true);
     
     try {
-      await login(email, password);
+      // Determine role based on email
+      let role = 'employee';
+      if (email.includes('admin')) {
+        role = 'admin';
+      } else if (email.includes('company')) {
+        role = 'company';
+      }
+
+      await login(email, password, role);
+      
       if (email.includes('admin')) {
         navigate('/admin');
       } else if (email.includes('company')) {
@@ -41,10 +50,10 @@ const LoginForm = () => {
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: 'url("https://images.unsplash.com/photo-1497366754035-f200968a6e72?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80")'
+          backgroundImage: 'url("https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80")'
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/80 via-blue-900/70 to-indigo-900/80"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/85 via-blue-900/80 to-indigo-900/85"></div>
       </div>
 
       {/* Animated Background Elements */}
