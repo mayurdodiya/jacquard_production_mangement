@@ -1,13 +1,115 @@
 import React, { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Users, Plus, Search, Mail, Phone, MapPin, SquarePen } from "lucide-react";
+import {
+  Users,
+  Plus,
+  Search,
+  Mail,
+  Phone,
+  MapPin,
+  SquarePen,
+} from "lucide-react";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { DateRange } from "react-day-picker";
+// import { DialogFooter, DialogHeader } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@radix-ui/react-select";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@radix-ui/react-popover";
+import { format } from "date-fns";
+import { Button } from "@/components/ui/button";
+import { Calendar as CalendarIcon } from "lucide-react";
+
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+// import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker'; // <-- you used this, but it's in PRO
+// USE THIS INSTEAD:
+// import { DateRangePicker } from '@mui/x-date-pickers/DateRangePicker';
+// import { DateRangePicker } from '@mui/x-date-pickers/DateRangePicker'
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+
+// import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+// import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+// import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+// import { TextField, Box } from '@mui/material';
+
+import TextField from "@mui/material/TextField";
+import Box from "@mui/material/Box";
+
+interface Company {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  industry: string;
+  status: "Active" | "Inactive" | "Pending";
+  employees: number;
+  joinedDate: string;
+}
 
 const EmployeeManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [isActive, setIsActive] = useState(false);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+    industry: "",
+    status: "Active" as "Active" | "Inactive" | "Pending",
+  });
+  const [date, setDate] = React.useState<DateRange | undefined>(undefined);
+  const [value, setValue] = React.useState([null, null]);
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+
+  const handleAdd = () => {
+    const newCompany: Company = {
+      id: Date.now().toString(),
+      ...formData,
+      employees: 0,
+      joinedDate: new Date().toISOString().split("T")[0],
+    };
+    // setCompanies([...companies, newCompany]);
+    setFormData({
+      name: "",
+      email: "",
+      phone: "",
+      address: "",
+      industry: "",
+      status: "Active",
+    });
+    setIsAddDialogOpen(false);
+  };
 
   const employees = [
     {
@@ -69,25 +171,38 @@ const EmployeeManagement = () => {
     }
   };
 
-  const filteredEmployees = employees.filter((employee) => employee.name.toLowerCase().includes(searchTerm.toLowerCase()) || employee.department.toLowerCase().includes(searchTerm.toLowerCase()));
+  const filteredEmployees = employees.filter(
+    (employee) =>
+      employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      employee.department.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 relative">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Employee Management</h1>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Employee Management
+          </h1>
           <p className="text-gray-600">Manage your workforce</p>
         </div>
-        <Button>
-          <Plus className="w-4 h-4 mr-2" />
-          Add Employee
-        </Button>
+        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+          <DialogTrigger asChild>
+            {/* <Button className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white shadow-lg"> */}
+            <Button className="bg-black hover:bg-gray-800 text-white shadow-lg transition-colors duration-300">
+              <Plus className="w-4 h-4 mr-2" />
+              Add Employee
+            </Button>
+          </DialogTrigger>
+        </Dialog>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Employees</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Employees
+            </CardTitle>
             <Users className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
@@ -135,14 +250,62 @@ const EmployeeManagement = () => {
           <CardTitle>Employee Directory</CardTitle>
           <CardDescription>Manage your team members</CardDescription>
           <div className="flex items-center space-x-2">
-            <Search className="w-4 h-4" />
-            <Input placeholder="Search employees..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="max-w-sm" />
+            {/* search bar */}
+            <div className="relative max-w-sm w-full">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                <Search className="w-4 h-4" />
+              </span>
+              <Input
+                placeholder="Search employees..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+
+            {/* date picker */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-[300px] justify-between text-left font-normal"
+                >
+                  <span>
+                    {date?.from ? (
+                      date.to ? (
+                        <>
+                          {format(date.from, "MMM dd, yyyy")} -{" "}
+                          {format(date.to, "MMM dd, yyyy")}
+                        </>
+                      ) : (
+                        format(date.from, "MMM dd, yyyy")
+                      )
+                    ) : (
+                      <span>Pick a date range</span>
+                    )}
+                  </span>
+                  <CalendarIcon className="ml-2 h-4 w-4 text-blue-500" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-4 bg-white border border-gray-300 rounded-lg shadow-lg">
+                <Calendar
+                  mode="range"
+                  selected={date}
+                  onSelect={setDate}
+                  numberOfMonths={1} // single calendar
+                />
+              </PopoverContent>
+            </Popover>
           </div>
         </CardHeader>
+
         <CardContent>
           <div className="grid gap-4">
             {filteredEmployees.map((employee) => (
-              <div key={employee.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
+              <div
+                key={employee.id}
+                className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50"
+              >
                 <div className="flex items-center space-x-4">
                   <Avatar>
                     <AvatarFallback>
@@ -174,17 +337,137 @@ const EmployeeManagement = () => {
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Badge className={getStatusColor(employee.status)}>{employee.status}</Badge>
+                  <Badge className={getStatusColor(employee.status)}>
+                    {employee.status}
+                  </Badge>
                   <SquarePen className="h-4 w-4 text-purple-600" />
                   <Button variant="outline" size="sm">
                     View Details
                   </Button>
+                  {/* active inactive btn */}
+                  <label className="inline-flex items-center cursor-pointer">
+                    <div
+                      className={`relative w-12 h-6 rounded-full transition-colors duration-300 ${
+                        isActive ? "bg-green-500" : "bg-gray-300"
+                      }`}
+                      onClick={() => setIsActive(!isActive)}
+                    >
+                      <div
+                        className={`absolute top-[2px] left-[2px] h-5 w-5 rounded-full bg-white shadow-md transform transition-transform duration-300 ${
+                          isActive ? "translate-x-[24px]" : ""
+                        }`}
+                      ></div>
+                    </div>
+                  </label>
                 </div>
               </div>
             ))}
           </div>
         </CardContent>
       </Card>
+
+      {/* Add Employee Dialog */}
+      {
+        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+          <DialogContent className="sm:max-w-[525px] rounded-lg bg-white shadow-xl p-6">
+            <DialogHeader>
+              <DialogTitle className="bg-gradient-to-r from-blue-600 to-indigo-700 bg-clip-text text-transparent">
+                Add Employee
+              </DialogTitle>
+              <DialogDescription>
+                Register a new employee in the system
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="name" className="text-right">
+                  Company Name
+                </Label>
+                <Input
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                  className="col-span-3"
+                  placeholder="Enter company name"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="email" className="text-right">
+                  Email
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
+                  className="col-span-3"
+                  placeholder="company@example.com"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="phone" className="text-right">
+                  Phone
+                </Label>
+                <Input
+                  id="phone"
+                  value={formData.phone}
+                  onChange={(e) =>
+                    setFormData({ ...formData, phone: e.target.value })
+                  }
+                  className="col-span-3"
+                  placeholder="+1-555-0123"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="address" className="text-right">
+                  Address
+                </Label>
+                <Input
+                  id="address"
+                  value={formData.address}
+                  onChange={(e) =>
+                    setFormData({ ...formData, address: e.target.value })
+                  }
+                  className="col-span-3"
+                  placeholder="Company address"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="status" className="text-right">
+                  Status
+                </Label>
+                <Select
+                  value={formData.status}
+                  onValueChange={(value: "Active" | "Inactive" | "Pending") =>
+                    setFormData({ ...formData, status: value })
+                  }
+                >
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Active">Active</SelectItem>
+                    <SelectItem value="Pending">Pending</SelectItem>
+                    <SelectItem value="Inactive">Inactive</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                onClick={handleAdd}
+                className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800"
+              >
+                Submit
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      }
     </div>
   );
 };

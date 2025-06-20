@@ -62,16 +62,12 @@ const CompanyProfile = () => {
                   <Input id="email" type="email" defaultValue="contact@textile.com" />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              {/* <div className="grid grid-cols-2 gap-4"> */}
                 <div>
                   <Label htmlFor="website">Website</Label>
                   <Input id="website" defaultValue="www.textile.com" />
                 </div>
-                <div>
-                  <Label htmlFor="taxId">Tax ID</Label>
-                  <Input id="taxId" defaultValue="12-3456789" />
-                </div>
-              </div>
+              {/* </div> */}
               <Button>Save Changes</Button>
             </CardContent>
           </Card>

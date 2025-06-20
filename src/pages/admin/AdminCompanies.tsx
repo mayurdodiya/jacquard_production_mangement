@@ -1,13 +1,48 @@
 import React, { useEffect, useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Search, Plus, Edit, Trash2, Building2, Users, Activity } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Search,
+  Plus,
+  Edit,
+  Trash2,
+  Building2,
+  Users,
+  Activity,
+} from "lucide-react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
 import { useDispatch } from "react-redux";
@@ -22,7 +57,9 @@ const companySchema = Yup.object().shape({
   phone: Yup.string().required("Phone is required"),
   address: Yup.string().required("Address is required"),
   industry: Yup.string().required("Industry is required"),
-  status: Yup.string().oneOf(["Active", "Pending", "Inactive"]).required("Status is required"),
+  status: Yup.string()
+    .oneOf(["Active", "Pending", "Inactive"])
+    .required("Status is required"),
 });
 
 const initialValues = {
@@ -52,6 +89,7 @@ const AdminCompanies = () => {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
+  const [isActive, setIsActive] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -113,7 +151,15 @@ const AdminCompanies = () => {
   // redux state
   const companies = useSelector((state: RootState) => state?.companyList);
 
-  const filteredCompanies = companies?.length > 0 ? companies?.filter((company: any) => company.name.toLowerCase().includes(searchTerm.toLowerCase()) || company.email.toLowerCase().includes(searchTerm.toLowerCase()) || company.industry.toLowerCase().includes(searchTerm.toLowerCase())) : [];
+  const filteredCompanies =
+    companies?.length > 0
+      ? companies?.filter(
+          (company: any) =>
+            company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            company.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            company.industry.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      : [];
 
   const handleAdd = () => {
     const newCompany: Company = {
@@ -123,7 +169,14 @@ const AdminCompanies = () => {
       joinedDate: new Date().toISOString().split("T")[0],
     };
     // setCompanies([...companies, newCompany]);
-    setFormData({ name: "", email: "", phone: "", address: "", industry: "", status: "Active" });
+    setFormData({
+      name: "",
+      email: "",
+      phone: "",
+      address: "",
+      industry: "",
+      status: "Active",
+    });
     setIsAddDialogOpen(false);
   };
 
@@ -171,9 +224,15 @@ const AdminCompanies = () => {
 
   const stats = {
     total: companies.length,
-    active: companies?.filter((c: { status: string }) => c.status === "Active").length,
-    pending: companies?.filter((c: { status: string }) => c.status === "Pending").length,
-    totalEmployees: companies?.reduce((sum: any, c: { employees: any }) => sum + c.employees, 0),
+    active: companies?.filter((c: { status: string }) => c.status === "Active")
+      .length,
+    pending: companies?.filter(
+      (c: { status: string }) => c.status === "Pending"
+    ).length,
+    totalEmployees: companies?.reduce(
+      (sum: any, c: { employees: any }) => sum + c.employees,
+      0
+    ),
   };
 
   return (
@@ -182,57 +241,78 @@ const AdminCompanies = () => {
       <div
         className="fixed inset-0 bg-cover bg-center bg-no-repeat opacity-5 pointer-events-none"
         style={{
-          backgroundImage: 'url("https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80")',
+          backgroundImage:
+            'url("https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80")',
         }}
       />
 
       <div>
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-700 bg-clip-text text-transparent">Company Management</h1>
-        <p className="text-slate-600">Manage and oversee all registered companies</p>
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-700 bg-clip-text text-transparent">
+          Company Management
+        </h1>
+        <p className="text-slate-600">
+          Manage and oversee all registered companies
+        </p>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card className="border-slate-200 shadow-lg bg-white/95 backdrop-blur-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-slate-700">Total Companies</CardTitle>
+            <CardTitle className="text-sm font-medium text-slate-700">
+              Total Companies
+            </CardTitle>
             <Building2 className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-slate-800">{stats.total}</div>
+            <div className="text-2xl font-bold text-slate-800">
+              {stats.total}
+            </div>
             <p className="text-xs text-slate-500">Registered companies</p>
           </CardContent>
         </Card>
 
         <Card className="border-slate-200 shadow-lg bg-white/95 backdrop-blur-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-slate-700">Active</CardTitle>
+            <CardTitle className="text-sm font-medium text-slate-700">
+              Active
+            </CardTitle>
             <Activity className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-slate-800">{stats.active}</div>
+            <div className="text-2xl font-bold text-slate-800">
+              {stats.active}
+            </div>
             <p className="text-xs text-slate-500">Currently active</p>
           </CardContent>
         </Card>
 
         <Card className="border-slate-200 shadow-lg bg-white/95 backdrop-blur-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-slate-700">Pending</CardTitle>
+            <CardTitle className="text-sm font-medium text-slate-700">
+              Pending
+            </CardTitle>
             <Activity className="h-4 w-4 text-yellow-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-slate-800">{stats.pending}</div>
+            <div className="text-2xl font-bold text-slate-800">
+              {stats.pending}
+            </div>
             <p className="text-xs text-slate-500">Awaiting approval</p>
           </CardContent>
         </Card>
 
         <Card className="border-slate-200 shadow-lg bg-white/95 backdrop-blur-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-slate-700">Total Employees</CardTitle>
+            <CardTitle className="text-sm font-medium text-slate-700">
+              Total Employees
+            </CardTitle>
             <Users className="h-4 w-4 text-indigo-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-slate-800">{stats.totalEmployees}</div>
+            <div className="text-2xl font-bold text-slate-800">
+              {stats.totalEmployees}
+            </div>
             <p className="text-xs text-slate-500">Across all companies</p>
           </CardContent>
         </Card>
@@ -242,8 +322,12 @@ const AdminCompanies = () => {
         <CardHeader>
           <div className="flex justify-between items-start">
             <div>
-              <CardTitle className="bg-gradient-to-r from-blue-600 to-indigo-700 bg-clip-text text-transparent">Companies Directory</CardTitle>
-              <CardDescription className="text-slate-600">View and manage all registered companies</CardDescription>
+              <CardTitle className="bg-gradient-to-r from-blue-600 to-indigo-700 bg-clip-text text-transparent">
+                Companies Directory
+              </CardTitle>
+              <CardDescription className="text-slate-600">
+                View and manage all registered companies
+              </CardDescription>
             </div>
             <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
               <DialogTrigger asChild>
@@ -256,7 +340,12 @@ const AdminCompanies = () => {
           </div>
           <div className="flex items-center space-x-2 mt-4">
             <Search className="w-4 h-4 text-slate-400" />
-            <Input placeholder="Search companies..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="max-w-sm border-slate-200" />
+            <Input
+              placeholder="Search companies..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="max-w-sm border-slate-200"
+            />
           </div>
         </CardHeader>
         <CardContent>
@@ -278,26 +367,43 @@ const AdminCompanies = () => {
                   <TableRow key={company.id}>
                     <TableCell>
                       <div>
-                        <div className="font-medium text-slate-900">{company.name}</div>
-                        <div className="text-sm text-slate-500">{company.address}</div>
+                        <div className="font-medium text-slate-900">
+                          {company.name}
+                        </div>
+                        <div className="text-sm text-slate-500">
+                          {company.address}
+                        </div>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div>
-                        <div className="text-sm text-slate-900">{company.email}</div>
-                        <div className="text-sm text-slate-500">{company.phone}</div>
+                        <div className="text-sm text-slate-900">
+                          {company.email}
+                        </div>
+                        <div className="text-sm text-slate-500">
+                          {company.phone}
+                        </div>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                      <Badge
+                        variant="outline"
+                        className="bg-blue-50 text-blue-700 border-blue-200"
+                      >
                         {company.industry}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge className={getStatusBadge(company.status)}>{company.status}</Badge>
+                      <Badge className={getStatusBadge(company.status)}>
+                        {company.status}
+                      </Badge>
                     </TableCell>
-                    <TableCell className="text-slate-900">{company.employees}</TableCell>
-                    <TableCell className="text-slate-500">{company.joinedDate}</TableCell>
+                    <TableCell className="text-slate-900">
+                      {company.employees}
+                    </TableCell>
+                    <TableCell className="text-slate-500">
+                      {company.joinedDate}
+                    </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end space-x-2">
                         <Button
@@ -316,6 +422,21 @@ const AdminCompanies = () => {
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
+                        {/* active inactive btn */}
+                        <label className="inline-flex items-center cursor-pointer">
+                          <div
+                            className={`relative w-12 h-6 rounded-full transition-colors duration-300 ${
+                              isActive ? "bg-green-500" : "bg-gray-300"
+                            }`}
+                            onClick={() => setIsActive(!isActive)}
+                          >
+                            <div
+                              className={`absolute top-[2px] left-[2px] h-5 w-5 rounded-full bg-white shadow-md transform transition-transform duration-300 ${
+                                isActive ? "translate-x-[24px]" : ""
+                              }`}
+                            ></div>
+                          </div>
+                        </label>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -327,67 +448,115 @@ const AdminCompanies = () => {
       </Card>
 
       {/* Add Company Dialog */}
-      {<Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-        <DialogContent className="sm:max-w-[525px] bg-white/95 backdrop-blur-sm">
-          <DialogHeader>
-            <DialogTitle className="bg-gradient-to-r from-blue-600 to-indigo-700 bg-clip-text text-transparent">Add New Company</DialogTitle>
-            <DialogDescription>Register a new company in the system</DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right">
-                Company Name
-              </Label>
-              <Input id="name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="col-span-3" placeholder="Enter company name" />
+      {
+        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+          <DialogContent className="sm:max-w-[525px] bg-white/95 backdrop-blur-sm">
+            <DialogHeader>
+              <DialogTitle className="bg-gradient-to-r from-blue-600 to-indigo-700 bg-clip-text text-transparent">
+                Add New Company
+              </DialogTitle>
+              <DialogDescription>
+                Register a new company in the system
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="name" className="text-right">
+                  Company Name
+                </Label>
+                <Input
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                  className="col-span-3"
+                  placeholder="Enter company name"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="email" className="text-right">
+                  Email
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
+                  className="col-span-3"
+                  placeholder="company@example.com"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="phone" className="text-right">
+                  Phone
+                </Label>
+                <Input
+                  id="phone"
+                  value={formData.phone}
+                  onChange={(e) =>
+                    setFormData({ ...formData, phone: e.target.value })
+                  }
+                  className="col-span-3"
+                  placeholder="+1-555-0123"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="address" className="text-right">
+                  Address
+                </Label>
+                <Input
+                  id="address"
+                  value={formData.address}
+                  onChange={(e) =>
+                    setFormData({ ...formData, address: e.target.value })
+                  }
+                  className="col-span-3"
+                  placeholder="Company address"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="status" className="text-right">
+                  Status
+                </Label>
+                <Select
+                  value={formData.status}
+                  onValueChange={(value: "Active" | "Inactive" | "Pending") =>
+                    setFormData({ ...formData, status: value })
+                  }
+                >
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Active">Active</SelectItem>
+                    <SelectItem value="Pending">Pending</SelectItem>
+                    <SelectItem value="Inactive">Inactive</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="email" className="text-right">
-                Email
-              </Label>
-              <Input id="email" type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="col-span-3" placeholder="company@example.com" />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="phone" className="text-right">
-                Phone
-              </Label>
-              <Input id="phone" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="col-span-3" placeholder="+1-555-0123" />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="address" className="text-right">
-                Address
-              </Label>
-              <Input id="address" value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className="col-span-3" placeholder="Company address" />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="status" className="text-right">
-                Status
-              </Label>
-              <Select value={formData.status} onValueChange={(value: "Active" | "Inactive" | "Pending") => setFormData({ ...formData, status: value })}>
-                <SelectTrigger className="col-span-3">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Active">Active</SelectItem>
-                  <SelectItem value="Pending">Pending</SelectItem>
-                  <SelectItem value="Inactive">Inactive</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button onClick={handleAdd} className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800">
-              Submit
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>}
-
+            <DialogFooter>
+              <Button
+                onClick={handleAdd}
+                className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800"
+              >
+                Submit
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      }
 
       {/* Edit Company Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="sm:max-w-[525px] bg-white/95 backdrop-blur-sm">
           <DialogHeader>
-            <DialogTitle className="bg-gradient-to-r from-blue-600 to-indigo-700 bg-clip-text text-transparent">Edit Company</DialogTitle>
+            <DialogTitle className="bg-gradient-to-r from-blue-600 to-indigo-700 bg-clip-text text-transparent">
+              Edit Company
+            </DialogTitle>
             <DialogDescription>Update company information</DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -395,31 +564,65 @@ const AdminCompanies = () => {
               <Label htmlFor="edit-name" className="text-right">
                 Company Name
               </Label>
-              <Input id="edit-name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="col-span-3" />
+              <Input
+                id="edit-name"
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+                className="col-span-3"
+              />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="edit-email" className="text-right">
                 Email
               </Label>
-              <Input id="edit-email" type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="col-span-3" />
+              <Input
+                id="edit-email"
+                type="email"
+                value={formData.email}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
+                className="col-span-3"
+              />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="edit-phone" className="text-right">
                 Phone
               </Label>
-              <Input id="edit-phone" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="col-span-3" />
+              <Input
+                id="edit-phone"
+                value={formData.phone}
+                onChange={(e) =>
+                  setFormData({ ...formData, phone: e.target.value })
+                }
+                className="col-span-3"
+              />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="edit-address" className="text-right">
                 Address
               </Label>
-              <Input id="edit-address" value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className="col-span-3" />
+              <Input
+                id="edit-address"
+                value={formData.address}
+                onChange={(e) =>
+                  setFormData({ ...formData, address: e.target.value })
+                }
+                className="col-span-3"
+              />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="edit-industry" className="text-right">
                 Industry
               </Label>
-              <Select value={formData.industry} onValueChange={(value) => setFormData({ ...formData, industry: value })}>
+              <Select
+                value={formData.industry}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, industry: value })
+                }
+              >
                 <SelectTrigger className="col-span-3">
                   <SelectValue />
                 </SelectTrigger>
@@ -438,7 +641,12 @@ const AdminCompanies = () => {
               <Label htmlFor="edit-status" className="text-right">
                 Status
               </Label>
-              <Select value={formData.status} onValueChange={(value: "Active" | "Inactive" | "Pending") => setFormData({ ...formData, status: value })}>
+              <Select
+                value={formData.status}
+                onValueChange={(value: "Active" | "Inactive" | "Pending") =>
+                  setFormData({ ...formData, status: value })
+                }
+              >
                 <SelectTrigger className="col-span-3">
                   <SelectValue />
                 </SelectTrigger>
