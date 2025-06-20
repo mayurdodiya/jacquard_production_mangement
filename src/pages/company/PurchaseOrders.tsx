@@ -9,15 +9,19 @@ import {
   Plus, 
   Search, 
   Filter,
-  Calendar,
   Package,
   TrendingUp,
-  Clock
+  Clock,
+  Edit,
+  Trash2,
+  Eye,
+  Calendar
 } from 'lucide-react';
 
 const PurchaseOrders = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
+  const [dateFilter, setDateFilter] = useState('');
 
   const orders = [
     {
@@ -64,114 +68,147 @@ const PurchaseOrders = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Stored': return 'bg-green-100 text-green-800';
-      case 'In Progress': return 'bg-blue-100 text-blue-800';
-      case 'Pending': return 'bg-yellow-100 text-yellow-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'Stored': return 'bg-green-100 text-green-800 border-green-200';
+      case 'In Progress': return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'Pending': return 'bg-amber-100 text-amber-800 border-amber-200';
+      default: return 'bg-slate-100 text-slate-800 border-slate-200';
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'High': return 'bg-red-100 text-red-800';
-      case 'Medium': return 'bg-yellow-100 text-yellow-800';
-      case 'Low': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'High': return 'bg-red-100 text-red-800 border-red-200';
+      case 'Medium': return 'bg-amber-100 text-amber-800 border-amber-200';
+      case 'Low': return 'bg-green-100 text-green-800 border-green-200';
+      default: return 'bg-slate-100 text-slate-800 border-slate-200';
     }
+  };
+
+  const handleAddOrder = () => {
+    console.log('Add new purchase order');
+  };
+
+  const handleEditOrder = (orderId: string) => {
+    console.log('Edit order:', orderId);
+  };
+
+  const handleDeleteOrder = (orderId: string) => {
+    console.log('Delete order:', orderId);
+  };
+
+  const handleViewOrder = (orderId: string) => {
+    console.log('View order details:', orderId);
   };
 
   const filteredOrders = orders.filter(order => {
     const matchesSearch = order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          order.supplier.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'All' || order.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    const matchesDate = !dateFilter || order.orderDate.includes(dateFilter);
+    return matchesSearch && matchesStatus && matchesDate;
   });
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Purchase Orders</h1>
-          <p className="text-gray-600">Manage your purchase orders and inventory</p>
+          <h1 className="text-3xl font-bold text-slate-800">Purchase Orders</h1>
+          <p className="text-slate-600 mt-1">Manage your purchase orders and inventory</p>
         </div>
-        <Button>
+        <Button 
+          onClick={handleAddOrder}
+          className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white shadow-lg"
+        >
           <Plus className="w-4 h-4 mr-2" />
           New Purchase Order
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card>
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card className="bg-white shadow-lg border-0 hover:shadow-xl transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
-            <ShoppingCart className="h-4 w-4 text-blue-600" />
+            <CardTitle className="text-sm font-medium text-slate-600">Total Orders</CardTitle>
+            <div className="p-2 bg-blue-100 rounded-lg">
+              <ShoppingCart className="h-4 w-4 text-blue-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{orders.length}</div>
-            <p className="text-xs text-muted-foreground">This month</p>
+            <div className="text-2xl font-bold text-blue-700">{orders.length}</div>
+            <p className="text-xs text-slate-500 mt-1">This month</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-white shadow-lg border-0 hover:shadow-xl transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Orders</CardTitle>
-            <Clock className="h-4 w-4 text-yellow-600" />
+            <CardTitle className="text-sm font-medium text-slate-600">Pending Orders</CardTitle>
+            <div className="p-2 bg-amber-100 rounded-lg">
+              <Clock className="h-4 w-4 text-amber-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-2xl font-bold text-amber-700">
               {orders.filter(o => o.status === 'Pending').length}
             </div>
-            <p className="text-xs text-muted-foreground">Awaiting processing</p>
+            <p className="text-xs text-slate-500 mt-1">Awaiting processing</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-white shadow-lg border-0 hover:shadow-xl transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">In Progress</CardTitle>
-            <Package className="h-4 w-4 text-blue-600" />
+            <CardTitle className="text-sm font-medium text-slate-600">In Progress</CardTitle>
+            <div className="p-2 bg-blue-100 rounded-lg">
+              <Package className="h-4 w-4 text-blue-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-2xl font-bold text-blue-700">
               {orders.filter(o => o.status === 'In Progress').length}
             </div>
-            <p className="text-xs text-muted-foreground">Being processed</p>
+            <p className="text-xs text-slate-500 mt-1">Being processed</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-white shadow-lg border-0 hover:shadow-xl transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Value</CardTitle>
-            <TrendingUp className="h-4 w-4 text-green-600" />
+            <CardTitle className="text-sm font-medium text-slate-600">Total Value</CardTitle>
+            <div className="p-2 bg-green-100 rounded-lg">
+              <TrendingUp className="h-4 w-4 text-green-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-2xl font-bold text-green-700">
               ${orders.reduce((sum, o) => sum + o.totalAmount, 0).toLocaleString()}
             </div>
-            <p className="text-xs text-muted-foreground">This month</p>
+            <p className="text-xs text-slate-500 mt-1">This month</p>
           </CardContent>
         </Card>
       </div>
 
-      <Card>
+      {/* Filters and Search */}
+      <Card className="bg-white shadow-lg border-0">
         <CardHeader>
-          <CardTitle>Purchase Orders</CardTitle>
-          <CardDescription>Track and manage your purchase orders</CardDescription>
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <Search className="w-4 h-4" />
+          <CardTitle className="text-xl text-slate-800">Purchase Orders</CardTitle>
+          <CardDescription className="text-slate-600">Track and manage your purchase orders</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col sm:flex-row gap-4 mb-6">
+            <div className="flex items-center space-x-2 flex-1">
+              <Search className="w-4 h-4 text-slate-400" />
               <Input
-                placeholder="Search orders..."
+                placeholder="Search orders by ID or supplier..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="max-w-sm"
+                className="border-slate-200 focus:border-blue-500 focus:ring-blue-500/20"
               />
             </div>
             <div className="flex items-center space-x-2">
-              <Filter className="w-4 h-4" />
+              <Filter className="w-4 h-4 text-slate-400" />
               <select 
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-3 py-2 border rounded-md"
+                className="px-3 py-2 border border-slate-200 rounded-md focus:border-blue-500 focus:ring-blue-500/20"
               >
                 <option value="All">All Status</option>
                 <option value="Pending">Pending</option>
@@ -179,40 +216,77 @@ const PurchaseOrders = () => {
                 <option value="Stored">Stored</option>
               </select>
             </div>
+            <div className="flex items-center space-x-2">
+              <Calendar className="w-4 h-4 text-slate-400" />
+              <Input
+                type="date"
+                value={dateFilter}
+                onChange={(e) => setDateFilter(e.target.value)}
+                className="border-slate-200 focus:border-blue-500 focus:ring-blue-500/20"
+              />
+            </div>
           </div>
-        </CardHeader>
-        <CardContent>
+
+          {/* Orders List */}
           <div className="space-y-4">
             {filteredOrders.map((order) => (
-              <div key={order.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
-                <div className="flex items-center space-x-4">
-                  <div className="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-lg">
-                    <ShoppingCart className="w-5 h-5 text-blue-600" />
+              <div key={order.id} className="flex flex-col lg:flex-row items-start lg:items-center justify-between p-6 border border-slate-200 rounded-xl hover:bg-slate-50 transition-all duration-300 hover:shadow-md">
+                <div className="flex items-start space-x-4 flex-1">
+                  <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-xl">
+                    <ShoppingCart className="w-6 h-6 text-blue-600" />
                   </div>
-                  <div>
-                    <h3 className="font-medium">{order.id}</h3>
-                    <p className="text-sm text-gray-600">{order.supplier}</p>
-                    <p className="text-sm text-gray-500">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <h3 className="font-semibold text-slate-800">{order.id}</h3>
+                      <Badge className={getPriorityColor(order.priority)}>
+                        {order.priority}
+                      </Badge>
+                    </div>
+                    <p className="text-slate-600 mb-1">{order.supplier}</p>
+                    <p className="text-sm text-slate-500">
                       Products: {order.products.join(', ')}
                     </p>
+                    <div className="flex items-center gap-4 mt-2 text-sm text-slate-500">
+                      <span>Ordered: {order.orderDate}</span>
+                      <span>Expected: {order.expectedDate}</span>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center space-x-4">
+                
+                <div className="flex flex-col lg:flex-row items-start lg:items-center gap-4 mt-4 lg:mt-0">
                   <div className="text-right">
-                    <p className="font-medium">${order.totalAmount.toLocaleString()}</p>
-                    <p className="text-sm text-gray-500">Expected: {order.expectedDate}</p>
-                  </div>
-                  <div className="flex flex-col space-y-1">
+                    <p className="font-semibold text-lg text-slate-800">${order.totalAmount.toLocaleString()}</p>
                     <Badge className={getStatusColor(order.status)}>
                       {order.status}
                     </Badge>
-                    <Badge className={getPriorityColor(order.priority)}>
-                      {order.priority}
-                    </Badge>
                   </div>
-                  <Button variant="outline" size="sm">
-                    View Details
-                  </Button>
+                  
+                  <div className="flex items-center gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => handleViewOrder(order.id)}
+                      className="border-slate-200 hover:bg-slate-50"
+                    >
+                      <Eye className="w-4 h-4" />
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => handleEditOrder(order.id)}
+                      className="border-blue-200 text-blue-600 hover:bg-blue-50"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => handleDeleteOrder(order.id)}
+                      className="border-red-200 text-red-600 hover:bg-red-50"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             ))}
