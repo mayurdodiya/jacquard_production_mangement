@@ -33,7 +33,15 @@ const AdminLayout = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="min-h-screen flex bg-slate-50 w-full">
+    <div className="min-h-screen flex bg-slate-50 w-full relative">
+      {/* Background Image */}
+      <div 
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat opacity-10 pointer-events-none"
+        style={{
+          backgroundImage: 'url("https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80")'
+        }}
+      />
+
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div 
@@ -45,7 +53,7 @@ const AdminLayout = () => {
       {/* Fixed Sidebar */}
       <aside className={`${
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      } fixed lg:relative lg:translate-x-0 z-50 w-72 h-screen bg-slate-800 shadow-2xl flex flex-col transition-all duration-300 ease-in-out`}>
+      } fixed lg:relative lg:translate-x-0 z-50 w-72 h-screen bg-gradient-to-b from-slate-800 to-slate-900 shadow-2xl flex flex-col transition-all duration-300 ease-in-out`}>
         
         {/* Header */}
         <div className="p-6 border-b border-slate-700 bg-gradient-to-r from-blue-600 to-indigo-700 text-white flex-shrink-0">
@@ -64,7 +72,7 @@ const AdminLayout = () => {
         </div>
 
         {/* Navigation - Scrollable */}
-        <nav className="flex-1 py-6 px-4 space-y-2 bg-slate-800 overflow-y-auto">
+        <nav className="flex-1 py-6 px-4 space-y-2 bg-gradient-to-b from-slate-800 to-slate-900 overflow-y-auto sidebar-scrollbar">
           {menuItems.map((item, index) => (
             <Link
               key={item.path}
@@ -72,13 +80,13 @@ const AdminLayout = () => {
               className={`group flex items-center px-4 py-3 rounded-xl transition-all duration-300 ${
                 isActive(item.path)
                   ? 'bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-lg'
-                  : 'text-slate-300 hover:bg-slate-700 hover:text-white'
+                  : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
               }`}
             >
               <div className={`p-2 rounded-lg mr-3 transition-all duration-300 ${
                 isActive(item.path) 
                   ? 'bg-white/20' 
-                  : 'bg-slate-700 group-hover:bg-slate-600'
+                  : 'bg-slate-700/50 group-hover:bg-slate-600/50'
               }`}>
                 <item.icon className="w-5 h-5" />
               </div>
@@ -91,11 +99,10 @@ const AdminLayout = () => {
         </nav>
 
         {/* Footer */}
-        <div className="p-4 border-t border-slate-700 bg-slate-800 flex-shrink-0">
+        <div className="p-4 border-t border-slate-700 bg-gradient-to-b from-slate-800 to-slate-900 flex-shrink-0">
           <Button 
             onClick={handleLogout} 
-            variant="outline" 
-            className="w-full bg-red-600 hover:bg-red-700 text-white border-red-600 hover:border-red-700"
+            className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white border-0 shadow-lg"
           >
             <LogOut className="w-4 h-4 mr-2" />
             Logout
@@ -104,9 +111,9 @@ const AdminLayout = () => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col min-h-screen lg:ml-0">
+      <main className="flex-1 flex flex-col min-h-screen lg:ml-0 relative z-10">
         {/* Mobile Header */}
-        <div className="lg:hidden bg-white shadow-sm border-b p-4 flex-shrink-0">
+        <div className="lg:hidden bg-white/95 backdrop-blur-sm shadow-sm border-b p-4 flex-shrink-0">
           <div className="flex items-center justify-between">
             <button
               onClick={() => setSidebarOpen(true)}
@@ -119,7 +126,7 @@ const AdminLayout = () => {
         </div>
 
         {/* Content Area - Scrollable */}
-        <div className="flex-1 overflow-y-auto bg-slate-50">
+        <div className="flex-1 overflow-y-auto bg-gradient-to-br from-blue-50/80 to-indigo-50/80 backdrop-blur-sm custom-scrollbar">
           <div className="p-6 max-w-7xl mx-auto">
             <Outlet />
           </div>
