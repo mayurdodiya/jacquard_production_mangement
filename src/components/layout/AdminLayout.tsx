@@ -25,15 +25,15 @@ const AdminLayout = () => {
   };
 
   const menuItems = [
-    { icon: Home, label: 'Dashboard', path: '/admin', gradient: 'from-blue-500 to-blue-600' },
-    { icon: Building2, label: 'Companies', path: '/admin/companies', gradient: 'from-teal-500 to-teal-600' },
-    { icon: User, label: 'Profile', path: '/admin/profile', gradient: 'from-indigo-500 to-indigo-600' },
+    { icon: Home, label: 'Dashboard', path: '/admin' },
+    { icon: Building2, label: 'Companies', path: '/admin/companies' },
+    { icon: User, label: 'Profile', path: '/admin/profile' },
   ];
 
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="min-h-screen flex bg-gradient-to-br from-slate-50 to-blue-50 w-full">
+    <div className="min-h-screen flex bg-slate-50 w-full">
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div 
@@ -42,13 +42,13 @@ const AdminLayout = () => {
         />
       )}
 
-      {/* Sidebar */}
+      {/* Fixed Sidebar */}
       <aside className={`${
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      } fixed lg:relative lg:translate-x-0 z-50 w-72 h-screen bg-slate-800 shadow-2xl flex flex-col transition-all duration-300 ease-in-out overflow-y-auto`}>
+      } fixed lg:relative lg:translate-x-0 z-50 w-72 h-screen bg-slate-800 shadow-2xl flex flex-col transition-all duration-300 ease-in-out`}>
         
         {/* Header */}
-        <div className="p-6 border-b border-slate-700 bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
+        <div className="p-6 border-b border-slate-700 bg-gradient-to-r from-blue-600 to-indigo-700 text-white flex-shrink-0">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-xl font-bold">Admin Panel</h1>
@@ -63,15 +63,15 @@ const AdminLayout = () => {
           </div>
         </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 py-6 px-4 space-y-2 bg-slate-800">
+        {/* Navigation - Scrollable */}
+        <nav className="flex-1 py-6 px-4 space-y-2 bg-slate-800 overflow-y-auto">
           {menuItems.map((item, index) => (
             <Link
               key={item.path}
               to={item.path}
               className={`group flex items-center px-4 py-3 rounded-xl transition-all duration-300 ${
                 isActive(item.path)
-                  ? `bg-gradient-to-r ${item.gradient} text-white shadow-lg`
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-lg'
                   : 'text-slate-300 hover:bg-slate-700 hover:text-white'
               }`}
             >
@@ -91,7 +91,7 @@ const AdminLayout = () => {
         </nav>
 
         {/* Footer */}
-        <div className="p-4 border-t border-slate-700 bg-slate-800">
+        <div className="p-4 border-t border-slate-700 bg-slate-800 flex-shrink-0">
           <Button 
             onClick={handleLogout} 
             variant="outline" 
@@ -104,9 +104,9 @@ const AdminLayout = () => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col min-h-screen">
+      <main className="flex-1 flex flex-col min-h-screen lg:ml-0">
         {/* Mobile Header */}
-        <div className="lg:hidden bg-white shadow-sm border-b p-4">
+        <div className="lg:hidden bg-white shadow-sm border-b p-4 flex-shrink-0">
           <div className="flex items-center justify-between">
             <button
               onClick={() => setSidebarOpen(true)}
@@ -118,8 +118,8 @@ const AdminLayout = () => {
           </div>
         </div>
 
-        {/* Content Area */}
-        <div className="flex-1 overflow-auto bg-slate-50">
+        {/* Content Area - Scrollable */}
+        <div className="flex-1 overflow-y-auto bg-slate-50">
           <div className="p-6 max-w-7xl mx-auto">
             <Outlet />
           </div>

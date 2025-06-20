@@ -29,20 +29,20 @@ const EmployeeLayout = () => {
   };
 
   const menuItems = [
-    { icon: Home, label: 'Dashboard', path: '/employee', gradient: 'from-blue-500 to-blue-600' },
-    { icon: User, label: 'Profile', path: '/employee/profile', gradient: 'from-teal-500 to-teal-600' },
-    { icon: ShoppingCart, label: 'Orders', path: '/employee/orders', gradient: 'from-indigo-500 to-indigo-600' },
-    { icon: Package, label: 'Stock', path: '/employee/stock', gradient: 'from-purple-500 to-purple-600' },
-    { icon: Settings, label: 'Machines', path: '/employee/machines', gradient: 'from-green-500 to-green-600' },
-    { icon: Calendar, label: 'Programmes', path: '/employee/programmes', gradient: 'from-cyan-500 to-cyan-600' },
-    { icon: Factory, label: 'Production', path: '/employee/production', gradient: 'from-orange-500 to-orange-600' },
-    { icon: Clock, label: 'Attendance', path: '/employee/attendance', gradient: 'from-pink-500 to-pink-600' },
+    { icon: Home, label: 'Dashboard', path: '/employee' },
+    { icon: User, label: 'Profile', path: '/employee/profile' },
+    { icon: ShoppingCart, label: 'Orders', path: '/employee/orders' },
+    { icon: Package, label: 'Stock', path: '/employee/stock' },
+    { icon: Settings, label: 'Machines', path: '/employee/machines' },
+    { icon: Calendar, label: 'Programmes', path: '/employee/programmes' },
+    { icon: Factory, label: 'Production', path: '/employee/production' },
+    { icon: Clock, label: 'Attendance', path: '/employee/attendance' },
   ];
 
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="min-h-screen flex bg-gradient-to-br from-slate-50 to-blue-50 w-full">
+    <div className="min-h-screen flex bg-slate-50 w-full">
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div 
@@ -51,13 +51,13 @@ const EmployeeLayout = () => {
         />
       )}
 
-      {/* Sidebar */}
+      {/* Fixed Sidebar */}
       <aside className={`${
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      } fixed lg:relative lg:translate-x-0 z-50 w-72 h-screen bg-slate-800 shadow-2xl flex flex-col transition-all duration-300 ease-in-out overflow-y-auto`}>
+      } fixed lg:relative lg:translate-x-0 z-50 w-72 h-screen bg-slate-800 shadow-2xl flex flex-col transition-all duration-300 ease-in-out`}>
         
         {/* Header */}
-        <div className="p-6 border-b border-slate-700 bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
+        <div className="p-6 border-b border-slate-700 bg-gradient-to-r from-blue-600 to-indigo-700 text-white flex-shrink-0">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-xl font-bold">Employee Panel</h1>
@@ -72,15 +72,15 @@ const EmployeeLayout = () => {
           </div>
         </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 py-6 px-4 space-y-2 bg-slate-800">
+        {/* Navigation - Scrollable */}
+        <nav className="flex-1 py-6 px-4 space-y-2 bg-slate-800 overflow-y-auto">
           {menuItems.map((item, index) => (
             <Link
               key={item.path}
               to={item.path}
               className={`group flex items-center px-4 py-3 rounded-xl transition-all duration-300 ${
                 isActive(item.path)
-                  ? `bg-gradient-to-r ${item.gradient} text-white shadow-lg`
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-lg'
                   : 'text-slate-300 hover:bg-slate-700 hover:text-white'
               }`}
             >
@@ -100,7 +100,7 @@ const EmployeeLayout = () => {
         </nav>
 
         {/* Footer */}
-        <div className="p-4 border-t border-slate-700 bg-slate-800">
+        <div className="p-4 border-t border-slate-700 bg-slate-800 flex-shrink-0">
           <Button 
             onClick={handleLogout} 
             variant="outline" 
@@ -113,9 +113,9 @@ const EmployeeLayout = () => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col min-h-screen">
+      <main className="flex-1 flex flex-col min-h-screen lg:ml-0">
         {/* Mobile Header */}
-        <div className="lg:hidden bg-white shadow-sm border-b p-4">
+        <div className="lg:hidden bg-white shadow-sm border-b p-4 flex-shrink-0">
           <div className="flex items-center justify-between">
             <button
               onClick={() => setSidebarOpen(true)}
@@ -127,8 +127,8 @@ const EmployeeLayout = () => {
           </div>
         </div>
 
-        {/* Content Area */}
-        <div className="flex-1 overflow-auto bg-slate-50">
+        {/* Content Area - Scrollable */}
+        <div className="flex-1 overflow-y-auto bg-slate-50">
           <div className="p-6 max-w-7xl mx-auto">
             <Outlet />
           </div>

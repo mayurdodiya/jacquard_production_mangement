@@ -1,192 +1,193 @@
 
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Clock, Calendar, CheckCircle, AlertCircle, User, Zap, Activity } from 'lucide-react';
+import {
+  CheckCircle,
+  Clock,
+  Package,
+  Settings,
+  Activity,
+  Calendar,
+  Factory,
+  TrendingUp
+} from 'lucide-react';
 
 const EmployeeDashboard = () => {
-  const handlePunchIn = () => {
-    console.log('Punch in clicked');
-  };
+  const stats = [
+    {
+      title: "Tasks Completed",
+      value: "18",
+      change: "+5 today",
+      icon: CheckCircle,
+      color: "text-green-600",
+      bgColor: "bg-green-50",
+      borderColor: "border-green-200"
+    },
+    {
+      title: "Hours Worked",
+      value: "6.5",
+      change: "Today",
+      icon: Clock,
+      color: "text-blue-600",
+      bgColor: "bg-blue-50",
+      borderColor: "border-blue-200"
+    },
+    {
+      title: "My Machines",
+      value: "3",
+      change: "Active",
+      icon: Settings,
+      color: "text-indigo-600",
+      bgColor: "bg-indigo-50",
+      borderColor: "border-indigo-200"
+    },
+    {
+      title: "Efficiency",
+      value: "94%",
+      change: "+2% this week",
+      icon: TrendingUp,
+      color: "text-purple-600",
+      bgColor: "bg-purple-50",
+      borderColor: "border-purple-200"
+    }
+  ];
 
-  const handlePunchOut = () => {
-    console.log('Punch out clicked');
+  const myTasks = [
+    { id: "T001", title: "Complete Cotton Weaving", machine: "Weaving Machine 1", deadline: "Today 3:00 PM", status: "In Progress" },
+    { id: "T002", title: "Quality Check Batch #45", machine: "Quality Station", deadline: "Today 4:30 PM", status: "Pending" },
+    { id: "T003", title: "Machine Maintenance Check", machine: "Dyeing Machine 2", deadline: "Tomorrow 9:00 AM", status: "Scheduled" },
+    { id: "T004", title: "Stock Count - Raw Materials", machine: "Warehouse", deadline: "Tomorrow 11:00 AM", status: "Pending" }
+  ];
+
+  const myMachines = [
+    { name: "Weaving Machine 1", status: "Running", programme: "Cotton Fabric Pattern A", completion: "85%" },
+    { name: "Cutting Machine 3", status: "Idle", programme: "None", completion: "N/A" },
+    { name: "Stitching Machine 2", status: "Running", programme: "Shirt Pattern Cut", completion: "62%" }
+  ];
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'In Progress': case 'Running': return 'bg-green-100 text-green-800 border-green-200';
+      case 'Pending': case 'Idle': return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'Scheduled': return 'bg-amber-100 text-amber-800 border-amber-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Background Video */}
-      <div className="fixed inset-0 z-0">
-        <video 
-          autoPlay 
-          muted 
-          loop 
-          className="w-full h-full object-cover opacity-20"
-          poster="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyMCIgaGVpZ2h0PSIxMDgwIiB2aWV3Qm94PSIwIDAgMTkyMCAxMDgwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxOTIwIiBoZWlnaHQ9IjEwODAiIGZpbGw9InVybCgjZ3JhZGllbnQpIi8+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzY2NjZmZjtzdG9wLW9wYWNpdHk6MSIgLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM4YjVjZjY7c3RvcC1vcGFjaXR5OjEiIC8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PC9zdmc+"
-        >
-          <source src="https://player.vimeo.com/external/236291043.sd.mp4?s=e7eea61937e1bf073b0c4eecfe0c5ff9b5692b36&profile_id=164" type="video/mp4" />
-        </video>
-      </div>
+    <div className="space-y-6 relative">
+      {/* Background Image */}
+      <div 
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat opacity-5 pointer-events-none"
+        style={{
+          backgroundImage: 'url("https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80")'
+        }}
+      />
 
-      <div className="relative z-10 space-y-8">
-        {/* Header */}
-        <div className="text-center animate-fade-in">
-          <div className="inline-flex items-center gap-3 mb-4">
-            <div className="p-3 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl shadow-lg">
-              <User className="w-8 h-8 text-white" />
-            </div>
-            <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                Employee Dashboard
-              </h1>
-            </div>
-          </div>
-          <p className="text-gray-600 text-lg">Welcome back! Manage your work activities and track progress</p>
+      <div className="relative z-10">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-slate-800">Welcome Back!</h1>
+          <p className="text-slate-600">Here's your daily work overview and tasks</p>
         </div>
-        
-        {/* Main Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <Card className="group hover:shadow-2xl transition-all duration-500 hover:scale-105 transform bg-white/80 backdrop-blur-sm border-0 shadow-lg animate-slide-in-right">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-xl">
-                <div className="p-2 bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg">
-                  <Clock className="w-5 h-5 text-white" />
-                </div>
-                Attendance
-              </CardTitle>
-              <CardDescription>Check in/out for today</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex justify-between items-center p-4 bg-green-50 rounded-xl">
-                <span className="text-sm font-medium text-gray-700">Status:</span>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-green-600 text-sm font-medium">Checked In</span>
-                </div>
-              </div>
-              <div className="flex justify-between items-center p-4 bg-blue-50 rounded-xl">
-                <span className="text-sm font-medium text-gray-700">Check-in Time:</span>
-                <span className="text-blue-600 text-sm font-medium">09:15 AM</span>
-              </div>
-              <div className="flex space-x-3">
-                <Button 
-                  onClick={handlePunchIn} 
-                  size="sm" 
-                  variant="outline"
-                  className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 text-white border-none hover:from-blue-600 hover:to-indigo-700 transition-all duration-300"
-                >
-                  <Clock className="w-4 h-4 mr-2" />
-                  Punch In
-                </Button>
-                <Button 
-                  onClick={handlePunchOut} 
-                  size="sm"
-                  className="flex-1 bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 transition-all duration-300"
-                >
-                  <Clock className="w-4 h-4 mr-2" />
-                  Punch Out
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
 
-          <Card className="group hover:shadow-2xl transition-all duration-500 hover:scale-105 transform bg-white/80 backdrop-blur-sm border-0 shadow-lg animate-slide-in-right" style={{ animationDelay: '100ms' }}>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-xl">
-                <div className="p-2 bg-gradient-to-r from-purple-500 to-pink-600 rounded-lg">
-                  <Calendar className="w-5 h-5 text-white" />
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {stats.map((stat, index) => (
+            <Card key={index} className={`${stat.borderColor} shadow-lg bg-white/95 backdrop-blur-sm border-2`}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-slate-700">{stat.title}</CardTitle>
+                <div className={`p-2 rounded-lg ${stat.bgColor}`}>
+                  <stat.icon className={`h-4 w-4 ${stat.color}`} />
                 </div>
-                Today's Schedule
-              </CardTitle>
-              <CardDescription>Your tasks and activities for today</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-slate-800">{stat.value}</div>
+                <p className={`text-xs ${stat.color} font-medium`}>
+                  {stat.change}
+                </p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* My Tasks */}
+          <Card className="border-slate-200 shadow-lg bg-white/95 backdrop-blur-sm">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle className="text-slate-800">My Tasks</CardTitle>
+                <CardDescription className="text-slate-600">Your assigned work items</CardDescription>
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="border-blue-200 text-blue-600 hover:bg-blue-50"
+              >
+                View All
+              </Button>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="flex items-center space-x-3 p-4 bg-green-50 rounded-xl hover:bg-green-100 transition-colors duration-300">
-                  <CheckCircle className="w-5 h-5 text-green-500" />
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-800">Morning production meeting</p>
-                    <p className="text-xs text-green-600">Completed</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-3 p-4 bg-yellow-50 rounded-xl hover:bg-yellow-100 transition-colors duration-300">
-                  <Clock className="w-5 h-5 text-yellow-500 animate-pulse" />
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-800">Order #1235 processing</p>
-                    <p className="text-xs text-yellow-600">In Progress</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-3 p-4 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors duration-300">
-                  <Calendar className="w-5 h-5 text-blue-500" />
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-800">Quality check scheduled</p>
-                    <p className="text-xs text-blue-600">2:00 PM</p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Bottom Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-0 hover:shadow-2xl transition-all duration-500 animate-fade-in">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-xl">
-                <div className="p-2 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg">
-                  <Activity className="w-5 h-5 text-white" />
-                </div>
-                This Week Summary
-              </CardTitle>
-              <CardDescription>Your weekly performance overview</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                {[
-                  { label: 'Hours Worked', value: '38.5 hrs', color: 'text-blue-600', bg: 'bg-blue-100' },
-                  { label: 'Orders Completed', value: '12', color: 'text-green-600', bg: 'bg-green-100' },
-                  { label: 'Attendance Rate', value: '100%', color: 'text-emerald-600', bg: 'bg-emerald-100' },
-                  { label: 'Performance Score', value: '94%', color: 'text-purple-600', bg: 'bg-purple-100' }
-                ].map((item, index) => (
-                  <div key={index} className="flex justify-between items-center p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors duration-300">
-                    <span className="text-sm font-medium text-gray-700">{item.label}</span>
-                    <div className="flex items-center gap-2">
-                      <div className={`px-3 py-1 ${item.bg} ${item.color} text-sm font-medium rounded-full`}>
-                        {item.value}
-                      </div>
-                      <Zap className="w-3 h-3 text-green-500" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-0 hover:shadow-2xl transition-all duration-500 animate-fade-in">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-xl">
-                <div className="p-2 bg-gradient-to-r from-orange-500 to-red-600 rounded-lg">
-                  <AlertCircle className="w-5 h-5 text-white" />
-                </div>
-                Notifications
-              </CardTitle>
-              <CardDescription>Recent updates and announcements</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {[
-                  { icon: AlertCircle, color: 'text-blue-500', bg: 'bg-blue-100', text: 'New order assigned to you', time: '5 min ago' },
-                  { icon: CheckCircle, color: 'text-green-500', bg: 'bg-green-100', text: 'Your timesheet was approved', time: '1 hour ago' },
-                  { icon: Calendar, color: 'text-purple-500', bg: 'bg-purple-100', text: 'Schedule updated for next week', time: '2 hours ago' },
-                  { icon: Activity, color: 'text-orange-500', bg: 'bg-orange-100', text: 'Monthly performance review due', time: '1 day ago' }
-                ].map((notification, index) => (
-                  <div key={index} className="flex items-start space-x-4 p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors duration-300">
-                    <div className={`p-2 ${notification.bg} rounded-lg`}>
-                      <notification.icon className={`w-4 h-4 ${notification.color}`} />
-                    </div>
+                {myTasks.map((task) => (
+                  <div key={task.id} className="flex items-center justify-between p-3 rounded-lg bg-slate-50/50 border border-slate-100">
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-800">{notification.text}</p>
-                      <p className="text-xs text-gray-500 mt-1">{notification.time}</p>
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <p className="font-medium text-slate-800">{task.title}</p>
+                          <p className="text-sm text-slate-500">{task.machine}</p>
+                          <p className="text-xs text-slate-400 mt-1">
+                            <Clock className="w-3 h-3 inline mr-1" />
+                            {task.deadline}
+                          </p>
+                        </div>
+                        <Badge className={getStatusColor(task.status)}>
+                          {task.status}
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* My Machines */}
+          <Card className="border-slate-200 shadow-lg bg-white/95 backdrop-blur-sm">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle className="text-slate-800">My Machines</CardTitle>
+                <CardDescription className="text-slate-600">Machines assigned to you</CardDescription>
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="border-blue-200 text-blue-600 hover:bg-blue-50"
+              >
+                Manage
+              </Button>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {myMachines.map((machine, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-slate-50/50 border border-slate-100">
+                    <div className="flex items-center space-x-3">
+                      <div className={`w-3 h-3 rounded-full ${
+                        machine.status === 'Running' ? 'bg-green-400' : 'bg-blue-400'
+                      }`}></div>
+                      <div>
+                        <p className="font-medium text-slate-800">{machine.name}</p>
+                        <p className="text-sm text-slate-500">{machine.programme}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <Badge className={getStatusColor(machine.status)}>
+                        {machine.status}
+                      </Badge>
+                      {machine.completion !== 'N/A' && (
+                        <p className="text-xs text-slate-500 mt-1">{machine.completion} complete</p>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -194,6 +195,34 @@ const EmployeeDashboard = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Quick Actions */}
+        <Card className="border-slate-200 shadow-lg bg-white/95 backdrop-blur-sm mt-6">
+          <CardHeader>
+            <CardTitle className="text-slate-800">Quick Actions</CardTitle>
+            <CardDescription className="text-slate-600">Frequently used tools and features</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Button className="h-16 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white flex flex-col">
+                <Clock className="w-5 h-5 mb-1" />
+                <span className="text-xs">Clock In/Out</span>
+              </Button>
+              <Button className="h-16 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white flex flex-col">
+                <Settings className="w-5 h-5 mb-1" />
+                <span className="text-xs">My Machines</span>
+              </Button>
+              <Button className="h-16 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white flex flex-col">
+                <Package className="w-5 h-5 mb-1" />
+                <span className="text-xs">Check Stock</span>
+              </Button>
+              <Button className="h-16 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white flex flex-col">
+                <Activity className="w-5 h-5 mb-1" />
+                <span className="text-xs">View Reports</span>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
