@@ -22,14 +22,32 @@ const DailyConsumption = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   
-  // Mock stock products data
+  // Mock stock products data with images
   const [stockProducts] = useState([
-    { id: 'PRD-001', name: 'Cotton Fabric', currentStock: 500, unit: 'yards' },
-    { id: 'PRD-002', name: 'Polyester Thread', currentStock: 200, unit: 'spools' },
-    { id: 'PRD-003', name: 'Dye Solution', currentStock: 150, unit: 'liters' },
+    { 
+      id: 'PRD-001', 
+      name: 'Cotton Fabric', 
+      currentStock: 500, 
+      unit: 'yards',
+      image: 'https://images.unsplash.com/photo-1586380951230-8a2f57e8c7d9?w=100'
+    },
+    { 
+      id: 'PRD-002', 
+      name: 'Polyester Thread', 
+      currentStock: 200, 
+      unit: 'spools',
+      image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=100'
+    },
+    { 
+      id: 'PRD-003', 
+      name: 'Dye Solution', 
+      currentStock: 150, 
+      unit: 'liters',
+      image: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=100'
+    },
   ]);
 
-  // Mock consumption history
+  // Mock consumption history with images
   const [consumptionHistory, setConsumptionHistory] = useState([
     {
       id: 1,
@@ -39,7 +57,8 @@ const DailyConsumption = () => {
       consumedQuantity: 50,
       unit: 'yards',
       consumedBy: 'Production Team A',
-      remainingStock: 450
+      remainingStock: 450,
+      image: 'https://images.unsplash.com/photo-1586380951230-8a2f57e8c7d9?w=100'
     },
     {
       id: 2,  
@@ -49,7 +68,8 @@ const DailyConsumption = () => {
       consumedQuantity: 10,
       unit: 'spools',
       consumedBy: 'Production Team B',
-      remainingStock: 190
+      remainingStock: 190,
+      image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=100'
     }
   ]);
 
@@ -77,7 +97,8 @@ const DailyConsumption = () => {
       consumedQuantity: consumedQty,
       unit: selectedProduct.unit,
       consumedBy: formData.consumedBy,
-      remainingStock: selectedProduct.currentStock - consumedQty
+      remainingStock: selectedProduct.currentStock - consumedQty,
+      image: selectedProduct.image
     };
 
     setConsumptionHistory([newConsumption, ...consumptionHistory]);
@@ -147,9 +168,16 @@ const DailyConsumption = () => {
                 <TableRow key={record.id}>
                   <TableCell className="font-medium">{record.date}</TableCell>
                   <TableCell>
-                    <div>
-                      <p className="font-medium">{record.productName}</p>
-                      <p className="text-sm text-slate-500">{record.productId}</p>
+                    <div className="flex items-center space-x-3">
+                      <img 
+                        src={record.image} 
+                        alt={record.productName}
+                        className="w-10 h-10 rounded-lg object-cover"
+                      />
+                      <div>
+                        <p className="font-medium">{record.productName}</p>
+                        <p className="text-sm text-slate-500">{record.productId}</p>
+                      </div>
                     </div>
                   </TableCell>
                   <TableCell>
@@ -187,7 +215,14 @@ const DailyConsumption = () => {
                 <SelectContent>
                   {stockProducts.map((product) => (
                     <SelectItem key={product.id} value={product.id}>
-                      {product.name} (Available: {product.currentStock} {product.unit})
+                      <div className="flex items-center space-x-2">
+                        <img 
+                          src={product.image} 
+                          alt={product.name}
+                          className="w-6 h-6 rounded object-cover"
+                        />
+                        <span>{product.name} (Available: {product.currentStock} {product.unit})</span>
+                      </div>
                     </SelectItem>
                   ))}
                 </SelectContent>

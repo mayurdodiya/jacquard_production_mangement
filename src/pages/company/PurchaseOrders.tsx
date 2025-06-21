@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,15 +14,22 @@ import {
   Edit,
   Trash2,
   Eye,
-  Calendar
+  Calendar,
+  FileText
 } from 'lucide-react';
+import AddPurchaseOrderModal from '@/components/modals/AddPurchaseOrderModal';
+import EditPurchaseOrderModal from '@/components/modals/EditPurchaseOrderModal';
+import { toast } from 'sonner';
 
 const PurchaseOrders = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [dateFilter, setDateFilter] = useState('');
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
 
-  const orders = [
+  const [orders, setOrders] = useState([
     {
       id: 'PO-001',
       supplier: 'Raw Material Suppliers Ltd.',
@@ -64,7 +70,7 @@ const PurchaseOrders = () => {
       expectedDate: '2024-01-18',
       priority: 'Medium'
     }
-  ];
+  ]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -84,20 +90,33 @@ const PurchaseOrders = () => {
     }
   };
 
-  const handleAddOrder = () => {
-    console.log('Add new purchase order');
+  const handleAddOrder = (newOrder: any) => {
+    setOrders([newOrder, ...orders]);
   };
 
   const handleEditOrder = (orderId: string) => {
-    console.log('Edit order:', orderId);
+    const order = orders.find(o => o.id === orderId);
+    setSelectedOrder(order);
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdateOrder = (updatedOrder: any) => {
+    setOrders(orders.map(o => o.id === updatedOrder.id ? updatedOrder : o));
   };
 
   const handleDeleteOrder = (orderId: string) => {
-    console.log('Delete order:', orderId);
+    setOrders(orders.filter(o => o.id !== orderId));
+    toast.success('Purchase order deleted successfully');
   };
 
   const handleViewOrder = (orderId: string) => {
     console.log('View order details:', orderId);
+    toast.info('Order details view - coming soon');
+  };
+
+  const handleGenerateInvoice = (orderId: string) => {
+    console.log('Generate invoice for:', orderId);
+    toast.success('Invoice generated successfully');
   };
 
   const filteredOrders = orders.filter(order => {
@@ -117,7 +136,7 @@ const PurchaseOrders = () => {
           <p className="text-slate-600 mt-1">Manage your purchase orders and inventory</p>
         </div>
         <Button 
-          onClick={handleAddOrder}
+          onClick={() => setIsAddModalOpen(true)}
           className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white shadow-lg"
         >
           <Plus className="w-4 h-4 mr-2" />
@@ -281,6 +300,14 @@ const PurchaseOrders = () => {
                     <Button 
                       variant="outline" 
                       size="sm"
+                      onClick={() => handleGenerateInvoice(order.id)}
+                      className="border-green-200 text-green-600 hover:bg-green-50"
+                    >
+                      <FileText className="w-4 h-4" />
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
                       onClick={() => handleDeleteOrder(order.id)}
                       className="border-red-200 text-red-600 hover:bg-red-50"
                     >
@@ -293,6 +320,20 @@ const PurchaseOrders = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Modals */}
+      <AddPurchaseOrderModal 
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onAdd={handleAddOrder}
+      />
+
+      <EditPurchaseOrderModal 
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onEdit={handleUpdateOrder}
+        order={selectedOrder}
+      />
     </div>
   );
 };

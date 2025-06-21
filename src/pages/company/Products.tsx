@@ -3,114 +3,89 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { 
   Package2, 
   Plus, 
   Search, 
+  QrCode,
   Edit,
   Trash2,
-  Eye,
-  Image as ImageIcon
+  Eye
 } from 'lucide-react';
+import QRCodeModal from '@/components/modals/QRCodeModal';
 import { toast } from 'sonner';
 
 const Products = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isQRModalOpen, setIsQRModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  
-  // Mock products data
-  const [products, setProducts] = useState([
+
+  const [products] = useState([
     {
       id: 'PRD-001',
-      name: 'Cotton Fabric',
-      image: 'https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=400',
-      description: 'High quality cotton fabric for textile manufacturing',
-      category: 'Raw Material',
-      price: 25.50,
-      stock: 500,
-      unit: 'yards'
+      name: 'Premium Cotton T-Shirt',
+      description: 'High-quality cotton t-shirt with premium finish',
+      category: 'Apparel',
+      price: 29.99,
+      stock: 150,
+      status: 'Active',
+      image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400'
     },
     {
       id: 'PRD-002',
-      name: 'Polyester Thread',
-      image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400',
-      description: 'Durable polyester thread for industrial sewing',
-      category: 'Material',
-      price: 12.00,
-      stock: 200,
-      unit: 'spools'
+      name: 'Silk Scarf Collection',
+      description: 'Elegant silk scarves in various colors and patterns',
+      category: 'Accessories',
+      price: 45.00,
+      stock: 75,
+      status: 'Active',
+      image: 'https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?w=400'
     },
     {
       id: 'PRD-003',
-      name: 'Dye Solution',
-      image: 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=400',
-      description: 'Premium textile dye for fabric coloring',
-      category: 'Chemical',
-      price: 45.75,
-      stock: 150,
-      unit: 'liters'
+      name: 'Denim Jacket',
+      description: 'Classic denim jacket with modern fit',
+      category: 'Outerwear',
+      price: 79.99,
+      stock: 25,
+      status: 'Low Stock',
+      image: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400'
+    },
+    {
+      id: 'PRD-004',
+      name: 'Wool Sweater',
+      description: 'Warm and comfortable wool sweater',
+      category: 'Knitwear',
+      price: 89.99,
+      stock: 0,
+      status: 'Out of Stock',
+      image: 'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=400'
     }
   ]);
 
-  const [formData, setFormData] = useState({
-    name: '',
-    image: '',
-    description: '',
-    category: '',
-    price: '',
-    stock: '',
-    unit: ''
-  });
-
-  const handleAddProduct = () => {
-    const newProduct = {
-      id: `PRD-${String(products.length + 1).padStart(3, '0')}`,
-      ...formData,
-      price: parseFloat(formData.price),
-      stock: parseInt(formData.stock)
-    };
-    setProducts([...products, newProduct]);
-    setFormData({ name: '', image: '', description: '', category: '', price: '', stock: '', unit: '' });
-    setIsAddDialogOpen(false);
-    toast.success('Product added successfully');
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'Active': return 'bg-green-100 text-green-800';
+      case 'Low Stock': return 'bg-yellow-100 text-yellow-800';
+      case 'Out of Stock': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
   };
 
-  const handleEditProduct = () => {
-    const updatedProducts = products.map(product =>
-      product.id === selectedProduct.id
-        ? { ...product, ...formData, price: parseFloat(formData.price), stock: parseInt(formData.stock) }
-        : product
-    );
-    setProducts(updatedProducts);
-    setIsEditDialogOpen(false);
-    setSelectedProduct(null);
-    setFormData({ name: '', image: '', description: '', category: '', price: '', stock: '', unit: '' });
-    toast.success('Product updated successfully');
-  };
-
-  const handleDeleteProduct = (productId) => {
-    setProducts(products.filter(product => product.id !== productId));
-    toast.success('Product deleted successfully');
-  };
-
-  const openEditDialog = (product) => {
+  const handleViewQR = (product: any) => {
     setSelectedProduct(product);
-    setFormData({
-      name: product.name,
-      image: product.image,
-      description: product.description,
-      category: product.category,
-      price: product.price.toString(),
-      stock: product.stock.toString(),
-      unit: product.unit
-    });
-    setIsEditDialogOpen(true);
+    setIsQRModalOpen(true);
+  };
+
+  const handleEditProduct = (productId: string) => {
+    console.log('Edit product:', productId);
+    toast.info('Edit product functionality - coming soon');
+  };
+
+  const handleDeleteProduct = (productId: string) => {
+    console.log('Delete product:', productId);
+    toast.info('Delete product functionality - coming soon');
   };
 
   const filteredProducts = products.filter(product =>
@@ -120,258 +95,143 @@ const Products = () => {
   );
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-slate-800">Product Management</h1>
-          <p className="text-slate-600 mt-1">Manage your product catalog and inventory</p>
+          <h1 className="text-3xl font-bold text-gray-900">Products</h1>
+          <p className="text-gray-600">Manage your product catalog</p>
         </div>
-        <Button 
-          onClick={() => setIsAddDialogOpen(true)}
-          className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white shadow-lg"
-        >
+        <Button>
           <Plus className="w-4 h-4 mr-2" />
-          Add Product
+          Create Product
         </Button>
       </div>
 
-      {/* Search Bar */}
-      <Card className="bg-white/90 backdrop-blur-sm border-blue-100">
-        <CardContent className="p-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Products</CardTitle>
+            <Package2 className="h-4 w-4 text-blue-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{products.length}</div>
+            <p className="text-xs text-muted-foreground">Products in catalog</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Active Products</CardTitle>
+            <Package2 className="h-4 w-4 text-green-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{products.filter(p => p.status === 'Active').length}</div>
+            <p className="text-xs text-muted-foreground">Currently available</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Low Stock</CardTitle>
+            <Package2 className="h-4 w-4 text-yellow-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{products.filter(p => p.status === 'Low Stock').length}</div>
+            <p className="text-xs text-muted-foreground">Need restocking</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Value</CardTitle>
+            <Package2 className="h-4 w-4 text-purple-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">${products.reduce((sum, p) => sum + (p.price * p.stock), 0).toFixed(0)}</div>
+            <p className="text-xs text-muted-foreground">Inventory value</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Product Catalog</CardTitle>
+          <CardDescription>View and manage all products</CardDescription>
           <div className="flex items-center space-x-2">
-            <Search className="w-4 h-4 text-slate-400" />
+            <Search className="w-4 h-4" />
             <Input
-              placeholder="Search products by name, ID, or category..."
+              placeholder="Search products..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="border-slate-200 focus:border-blue-500 focus:ring-blue-500/20"
+              className="max-w-sm"
             />
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredProducts.map((product) => (
+              <Card key={product.id} className="hover:shadow-lg transition-shadow">
+                <CardContent className="p-4">
+                  <div className="aspect-square mb-4 overflow-hidden rounded-lg">
+                    <img 
+                      src={product.image} 
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-start">
+                      <h3 className="font-semibold text-lg">{product.name}</h3>
+                      <Badge className={getStatusColor(product.status)}>
+                        {product.status}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-gray-600">ID: {product.id}</p>
+                    <p className="text-sm text-gray-600">{product.category}</p>
+                    <p className="text-sm text-gray-500 line-clamp-2">{product.description}</p>
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg font-bold">${product.price}</span>
+                      <span className="text-sm text-gray-500">Stock: {product.stock}</span>
+                    </div>
+                    <div className="flex gap-2 mt-3">
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={() => handleViewQR(product)}
+                        className="flex-1"
+                      >
+                        <QrCode className="w-4 h-4 mr-1" />
+                        QR
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => handleEditProduct(product.id)}
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => handleDeleteProduct(product.id)}
+                        className="text-red-600 hover:bg-red-50"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </CardContent>
       </Card>
 
-      {/* Products Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredProducts.map((product) => (
-          <Card key={product.id} className="bg-white/90 backdrop-blur-sm border-blue-100 hover:shadow-xl transition-all duration-300">
-            <CardHeader className="p-4">
-              <div className="aspect-square rounded-lg overflow-hidden bg-slate-100 mb-4">
-                {product.image ? (
-                  <img 
-                    src={product.image} 
-                    alt={product.name}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-slate-400">
-                    <ImageIcon className="w-12 h-12" />
-                  </div>
-                )}
-              </div>
-              <div className="flex justify-between items-start">
-                <div className="flex-1">
-                  <CardTitle className="text-lg text-slate-800">{product.name}</CardTitle>
-                  <p className="text-sm text-slate-500 mt-1">{product.id}</p>
-                </div>
-                <Badge className="bg-blue-100 text-blue-800">{product.category}</Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="p-4 pt-0">
-              <CardDescription className="text-slate-600 mb-4">
-                {product.description}
-              </CardDescription>
-              <div className="flex justify-between items-center mb-4">
-                <div>
-                  <p className="text-lg font-semibold text-slate-800">${product.price}</p>
-                  <p className="text-sm text-slate-500">per {product.unit}</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm text-slate-600">Stock: {product.stock}</p>
-                  <p className="text-xs text-slate-500">{product.unit}</p>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => openEditDialog(product)}
-                  className="flex-1 border-blue-200 text-blue-600 hover:bg-blue-50"
-                >
-                  <Edit className="w-4 h-4 mr-1" />
-                  Edit
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => handleDeleteProduct(product.id)}
-                  className="border-red-200 text-red-600 hover:bg-red-50"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* Add Product Dialog */}
-      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-        <DialogContent className="bg-white/95 backdrop-blur-sm max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-semibold">Add New Product</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label>Product Name</Label>
-              <Input 
-                value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
-                placeholder="Enter product name"
-              />
-            </div>
-            <div>
-              <Label>Image URL</Label>
-              <Input 
-                value={formData.image}
-                onChange={(e) => setFormData({...formData, image: e.target.value})}
-                placeholder="Enter image URL"
-              />
-            </div>
-            <div>
-              <Label>Category</Label>
-              <Input 
-                value={formData.category}
-                onChange={(e) => setFormData({...formData, category: e.target.value})}
-                placeholder="Enter category"
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label>Price</Label>
-                <Input 
-                  type="number"
-                  step="0.01"
-                  value={formData.price}
-                  onChange={(e) => setFormData({...formData, price: e.target.value})}
-                  placeholder="0.00"
-                />
-              </div>
-              <div>
-                <Label>Unit</Label>
-                <Input 
-                  value={formData.unit}
-                  onChange={(e) => setFormData({...formData, unit: e.target.value})}
-                  placeholder="e.g., pieces, kg"
-                />
-              </div>
-            </div>
-            <div>
-              <Label>Stock Quantity</Label>
-              <Input 
-                type="number"
-                value={formData.stock}
-                onChange={(e) => setFormData({...formData, stock: e.target.value})}
-                placeholder="Enter stock quantity"
-              />
-            </div>
-            <div>
-              <Label>Description</Label>
-              <Textarea 
-                value={formData.description}
-                onChange={(e) => setFormData({...formData, description: e.target.value})}
-                placeholder="Enter product description"
-                rows={3}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleAddProduct} className="bg-gradient-to-r from-blue-600 to-indigo-700">
-              Add Product
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit Product Dialog */}
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="bg-white/95 backdrop-blur-sm max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-semibold">Edit Product</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label>Product Name</Label>
-              <Input 
-                value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
-                placeholder="Enter product name"
-              />
-            </div>
-            <div>
-              <Label>Image URL</Label>
-              <Input 
-                value={formData.image}
-                onChange={(e) => setFormData({...formData, image: e.target.value})}
-                placeholder="Enter image URL"
-              />
-            </div>
-            <div>
-              <Label>Category</Label>
-              <Input 
-                value={formData.category}
-                onChange={(e) => setFormData({...formData, category: e.target.value})}
-                placeholder="Enter category"
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label>Price</Label>
-                <Input 
-                  type="number"
-                  step="0.01"
-                  value={formData.price}
-                  onChange={(e) => setFormData({...formData, price: e.target.value})}
-                  placeholder="0.00"
-                />
-              </div>
-              <div>
-                <Label>Unit</Label>
-                <Input 
-                  value={formData.unit}
-                  onChange={(e) => setFormData({...formData, unit: e.target.value})}
-                  placeholder="e.g., pieces, kg"
-                />
-              </div>
-            </div>
-            <div>
-              <Label>Stock Quantity</Label>
-              <Input 
-                type="number"
-                value={formData.stock}
-                onChange={(e) => setFormData({...formData, stock: e.target.value})}
-                placeholder="Enter stock quantity"
-              />
-            </div>
-            <div>
-              <Label>Description</Label>
-              <Textarea 
-                value={formData.description}
-                onChange={(e) => setFormData({...formData, description: e.target.value})}
-                placeholder="Enter product description"
-                rows={3}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleEditProduct} className="bg-gradient-to-r from-blue-600 to-indigo-700">
-              Update Product
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <QRCodeModal 
+        isOpen={isQRModalOpen}
+        onClose={() => setIsQRModalOpen(false)}
+        product={selectedProduct || { id: '', name: '', image: '' }}
+      />
     </div>
   );
 };
