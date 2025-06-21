@@ -46,22 +46,8 @@ import {
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Calendar as CalendarIcon } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-// import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker'; // <-- you used this, but it's in PRO
-// USE THIS INSTEAD:
-// import { DateRangePicker } from '@mui/x-date-pickers/DateRangePicker';
-// import { DateRangePicker } from '@mui/x-date-pickers/DateRangePicker'
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-
-// import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-// import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-// import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-// import { TextField, Box } from '@mui/material';
-
-import TextField from "@mui/material/TextField";
-import Box from "@mui/material/Box";
 
 interface Company {
   id: string;
@@ -76,6 +62,7 @@ interface Company {
 }
 
 const EmployeeManagement = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [isActive, setIsActive] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -341,7 +328,7 @@ const EmployeeManagement = () => {
                     {employee.status}
                   </Badge>
                   <SquarePen className="h-4 w-4 text-purple-600" />
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" onClick={()=> {navigate('/company/employees/employee-details')}}>
                     View Details
                   </Button>
                   {/* active inactive btn */}

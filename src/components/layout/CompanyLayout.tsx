@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
+import { Outlet, Link, useNavigate, useLocation, matchPath } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
@@ -30,20 +30,39 @@ const CompanyLayout = () => {
     navigate('/login');
   };
 
-  const menuItems = [
-    { icon: Home, label: 'Dashboard', path: '/company' },
-    { icon: User, label: 'Profile', path: '/company/profile' },
-    { icon: Users, label: 'Employees', path: '/company/employees' },
-    { icon: ShoppingCart, label: 'Purchase Orders', path: '/company/purchase-orders' },
-    { icon: Package, label: 'Stock', path: '/company/stock' },
-    { icon: UserCheck, label: 'Customers', path: '/company/customers' },
-    { icon: Factory, label: 'Production', path: '/company/production' },
-    { icon: Settings, label: 'Machines', path: '/company/machines' },
-    { icon: Calendar, label: 'Programmes', path: '/company/programmes' },
-    { icon: Activity, label: 'Activity History', path: '/company/activity' },
-  ];
+  // const menuItems = [
+  //   { icon: Home, label: 'Dashboard', path: '/company', exact:true },
+  //   { icon: User, label: 'Profile', path: '/company/profile' },
+  //   { icon: Users, label: 'Employees', path: '/company/employees' },
+  //   { icon: ShoppingCart, label: 'Purchase Orders', path: '/company/purchase-orders' },
+  //   { icon: Package, label: 'Stock', path: '/company/stock' },
+  //   { icon: UserCheck, label: 'Customers', path: '/company/customers' },
+  //   { icon: Factory, label: 'Production', path: '/company/production' },
+  //   { icon: Settings, label: 'Machines', path: '/company/machines' },
+  //   { icon: Calendar, label: 'Programmes', path: '/company/programmes' },
+  //   { icon: Activity, label: 'Activity History', path: '/company/activity' },
+  // ];
 
-  const isActive = (path: string) => location.pathname === path;
+  const menuItems = [
+  { icon: Home, label: "Dashboard", path: ["/company"], exact: true },
+  { icon: User, label: "Profile", path: ["/company/profile"] },
+  { icon: Users, label: "Employees", path: ["/company/employees", "/company/employees/view-details", "/company/employees/:id"] },
+  { icon: ShoppingCart, label: "Purchase Orders", path: ["/company/purchase-orders"] },
+  { icon: Package, label: "Stock", path: ["/company/stock"] },
+  { icon: UserCheck, label: "Customers", path: ["/company/customers"] },
+  { icon: Factory, label: "Production", path: ["/company/production"] },
+  { icon: Settings, label: "Machines", path: ["/company/machines"] },
+  { icon: Calendar, label: "Programmes", path: ["/company/programmes"] },
+  { icon: Activity, label: "Activity History", path: ["/company/activity"] },
+];
+
+  // const isActive = (path: string) => location.pathname === path;
+  const isActive = (item) => {
+  return item.path.some(path =>
+    !!matchPath({ path, end: item.exact ?? false }, location.pathname)
+  );
+};
+
 
   return (
     <div className="min-h-screen flex bg-slate-50 w-full relative">
@@ -86,7 +105,7 @@ const CompanyLayout = () => {
 
         {/* Navigation - Scrollable */}
         <nav className="flex-1 py-6 px-4 space-y-2 bg-gradient-to-b from-slate-800 to-slate-900 overflow-y-auto sidebar-scrollbar">
-          {menuItems.map((item, index) => (
+          {/* {menuItems.map((item, index) => (
             <Link
               key={item.path}
               to={item.path}
@@ -108,7 +127,33 @@ const CompanyLayout = () => {
                 <div className="ml-auto w-2 h-2 bg-white rounded-full"></div>
               )}
             </Link>
-          ))}
+          ))} */}
+          {menuItems.map((item) => (
+  <Link
+    key={item.label}
+    to={item.path[0]}
+    className={`group flex items-center px-4 py-3 rounded-xl transition-all duration-300 ${
+      isActive(item)
+        ? "bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-lg"
+        : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
+    }`}
+  >
+    <div
+      className={`p-2 rounded-lg mr-3 transition-all duration-300 ${
+        isActive(item)
+          ? "bg-white/20"
+          : "bg-slate-700/50 group-hover:bg-slate-600/50"
+      }`}
+    >
+      <item.icon className="w-5 h-5" />
+    </div>
+    <span className="font-medium text-sm">{item.label}</span>
+    {isActive(item) && (
+      <div className="ml-auto w-2 h-2 bg-white rounded-full"></div>
+    )}
+  </Link>
+))}
+
         </nav>
 
         {/* Footer */}
