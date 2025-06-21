@@ -16,7 +16,12 @@ import {
   Activity,
   LogOut,
   Menu,
-  X
+  X,
+  Package2,
+  ChevronDown,
+  ChevronRight,
+  CalendarDays,
+  Zap
 } from 'lucide-react';
 
 const CompanyLayout = () => {
@@ -24,45 +29,38 @@ const CompanyLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
-  // const menuItems = [
-  //   { icon: Home, label: 'Dashboard', path: '/company', exact:true },
-  //   { icon: User, label: 'Profile', path: '/company/profile' },
-  //   { icon: Users, label: 'Employees', path: '/company/employees' },
-  //   { icon: ShoppingCart, label: 'Purchase Orders', path: '/company/purchase-orders' },
-  //   { icon: Package, label: 'Stock', path: '/company/stock' },
-  //   { icon: UserCheck, label: 'Customers', path: '/company/customers' },
-  //   { icon: Factory, label: 'Production', path: '/company/production' },
-  //   { icon: Settings, label: 'Machines', path: '/company/machines' },
-  //   { icon: Calendar, label: 'Programmes', path: '/company/programmes' },
-  //   { icon: Activity, label: 'Activity History', path: '/company/activity' },
-  // ];
-
   const menuItems = [
-  { icon: Home, label: "Dashboard", path: ["/company"], exact: true },
-  { icon: User, label: "Profile", path: ["/company/profile"] },
-  { icon: Users, label: "Employees", path: ["/company/employees", "/company/employees/view-details", "/company/employees/:id"] },
-  { icon: ShoppingCart, label: "Purchase Orders", path: ["/company/purchase-orders"] },
-  { icon: Package, label: "Stock", path: ["/company/stock"] },
-  { icon: UserCheck, label: "Customers", path: ["/company/customers"] },
-  { icon: Factory, label: "Production", path: ["/company/production"] },
-  { icon: Settings, label: "Machines", path: ["/company/machines"] },
-  { icon: Calendar, label: "Programmes", path: ["/company/programmes"] },
-  { icon: Activity, label: "Activity History", path: ["/company/activity"] },
-];
+    { icon: Home, label: "Dashboard", path: ["/company"], exact: true },
+    { icon: User, label: "Profile", path: ["/company/profile"] },
+    { icon: Users, label: "Employees", path: ["/company/employees", "/company/employees/view-details", "/company/employees/:id"] },
+    { icon: Package2, label: "Products", path: ["/company/products"] },
+    { icon: ShoppingCart, label: "Purchase Orders", path: ["/company/purchase-orders"] },
+    { icon: Package, label: "Stock", path: ["/company/stock"] },
+    { icon: Zap, label: "Daily Consumption", path: ["/company/consumption"] },
+    { icon: UserCheck, label: "Customers", path: ["/company/customers"] },
+    { icon: Factory, label: "Production", path: ["/company/production"] },
+    { icon: Settings, label: "Machines", path: ["/company/machines"] },
+    { icon: Calendar, label: "Programmes", path: ["/company/programmes"] },
+    { icon: Activity, label: "Activity History", path: ["/company/activity"] },
+  ];
 
-  // const isActive = (path: string) => location.pathname === path;
+  const settingsItems = [
+    { label: "Calendar Settings", path: "/company/settings/calendar" },
+    { label: "Holiday Management", path: "/company/settings/holidays" },
+  ];
+
   const isActive = (item) => {
-  return item.path.some(path =>
-    !!matchPath({ path, end: item.exact ?? false }, location.pathname)
-  );
-};
-
+    return item.path.some(path =>
+      !!matchPath({ path, end: item.exact ?? false }, location.pathname)
+    );
+  };
 
   return (
     <div className="min-h-screen flex bg-slate-50 w-full relative">
@@ -105,55 +103,64 @@ const CompanyLayout = () => {
 
         {/* Navigation - Scrollable */}
         <nav className="flex-1 py-6 px-4 space-y-2 bg-gradient-to-b from-slate-800 to-slate-900 overflow-y-auto sidebar-scrollbar">
-          {/* {menuItems.map((item, index) => (
+          {menuItems.map((item) => (
             <Link
-              key={item.path}
-              to={item.path}
+              key={item.label}
+              to={item.path[0]}
               className={`group flex items-center px-4 py-3 rounded-xl transition-all duration-300 ${
-                isActive(item.path)
-                  ? 'bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-lg'
-                  : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
+                isActive(item)
+                  ? "bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-lg"
+                  : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
               }`}
             >
-              <div className={`p-2 rounded-lg mr-3 transition-all duration-300 ${
-                isActive(item.path) 
-                  ? 'bg-white/20' 
-                  : 'bg-slate-700/50 group-hover:bg-slate-600/50'
-              }`}>
+              <div
+                className={`p-2 rounded-lg mr-3 transition-all duration-300 ${
+                  isActive(item)
+                    ? "bg-white/20"
+                    : "bg-slate-700/50 group-hover:bg-slate-600/50"
+                }`}
+              >
                 <item.icon className="w-5 h-5" />
               </div>
               <span className="font-medium text-sm">{item.label}</span>
-              {isActive(item.path) && (
+              {isActive(item) && (
                 <div className="ml-auto w-2 h-2 bg-white rounded-full"></div>
               )}
             </Link>
-          ))} */}
-          {menuItems.map((item) => (
-  <Link
-    key={item.label}
-    to={item.path[0]}
-    className={`group flex items-center px-4 py-3 rounded-xl transition-all duration-300 ${
-      isActive(item)
-        ? "bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-lg"
-        : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
-    }`}
-  >
-    <div
-      className={`p-2 rounded-lg mr-3 transition-all duration-300 ${
-        isActive(item)
-          ? "bg-white/20"
-          : "bg-slate-700/50 group-hover:bg-slate-600/50"
-      }`}
-    >
-      <item.icon className="w-5 h-5" />
-    </div>
-    <span className="font-medium text-sm">{item.label}</span>
-    {isActive(item) && (
-      <div className="ml-auto w-2 h-2 bg-white rounded-full"></div>
-    )}
-  </Link>
-))}
+          ))}
 
+          {/* Settings Dropdown */}
+          <div className="space-y-1">
+            <button
+              onClick={() => setSettingsOpen(!settingsOpen)}
+              className="group flex items-center w-full px-4 py-3 rounded-xl transition-all duration-300 text-slate-300 hover:bg-slate-700/50 hover:text-white"
+            >
+              <div className="p-2 rounded-lg mr-3 transition-all duration-300 bg-slate-700/50 group-hover:bg-slate-600/50">
+                <Settings className="w-5 h-5" />
+              </div>
+              <span className="font-medium text-sm flex-1 text-left">Settings</span>
+              {settingsOpen ? (
+                <ChevronDown className="w-4 h-4" />
+              ) : (
+                <ChevronRight className="w-4 h-4" />
+              )}
+            </button>
+            
+            {settingsOpen && (
+              <div className="ml-4 space-y-1">
+                {settingsItems.map((setting) => (
+                  <Link
+                    key={setting.label}
+                    to={setting.path}
+                    className="group flex items-center px-4 py-2 rounded-lg transition-all duration-300 text-slate-400 hover:bg-slate-700/30 hover:text-white text-sm"
+                  >
+                    <CalendarDays className="w-4 h-4 mr-3" />
+                    {setting.label}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
         </nav>
 
         {/* Footer */}

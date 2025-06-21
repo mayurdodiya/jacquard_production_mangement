@@ -147,7 +147,7 @@ const EmployeeDetails = () => {
             <Button 
               variant="outline" 
               onClick={() => navigate('/company/employees')}
-              className="bg-white/80 backdrop-blur-sm border-blue-200 hover:bg-blue-50"
+              className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white border-0 hover:from-blue-700 hover:to-indigo-800 shadow-lg transition-all duration-300 transform hover:scale-105"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Employees
@@ -165,13 +165,19 @@ const EmployeeDetails = () => {
 
         {/* Employee Profile Card */}
         <Card className="bg-white/90 backdrop-blur-sm border-blue-100 shadow-xl">
-          <div className="relative h-32 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-t-lg"></div>
+          <div 
+            className="relative h-32 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-t-lg"
+            style={{
+              backgroundImage: 'linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)',
+              backgroundSize: 'cover'
+            }}
+          ></div>
           <CardContent className="relative -mt-16 p-6">
             <div className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-6">
               <img
                 src="/placeholder.svg"
                 alt="Profile"
-                className="h-32 w-32 rounded-full border-4 border-white shadow-lg bg-gray-200"
+                className="h-32 w-32 rounded-full border-4 border-white shadow-lg bg-gradient-to-br from-blue-100 to-indigo-100"
               />
               <div className="flex-1">
                 <div className="flex items-center space-x-4 mb-2">
@@ -195,7 +201,7 @@ const EmployeeDetails = () => {
                   variant="outline" 
                   size="sm" 
                   onClick={() => setIsEditDialogOpen(true)}
-                  className="bg-blue-50 border-blue-200 hover:bg-blue-100"
+                  className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white border-0 hover:from-blue-700 hover:to-indigo-800 shadow-lg transition-all duration-300 transform hover:scale-105"
                 >
                   <Pencil className="w-4 h-4 mr-2" />
                   Edit
@@ -204,6 +210,7 @@ const EmployeeDetails = () => {
                   variant="destructive" 
                   size="sm" 
                   onClick={() => setIsDeleteDialogOpen(true)}
+                  className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 shadow-lg transition-all duration-300 transform hover:scale-105"
                 >
                   <Trash2 className="w-4 h-4 mr-2" />
                   Delete
