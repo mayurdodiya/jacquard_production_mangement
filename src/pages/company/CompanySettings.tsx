@@ -1,222 +1,292 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { 
   Settings, 
-  Building2,
-  Bell,
-  Shield,
-  Users,
-  Database
+  Plus, 
+  Edit,
+  Trash2,
+  Calendar,
+  Building,
+  User,
+  Bell
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 const CompanySettings = () => {
+  const [isHolidayModalOpen, setIsHolidayModalOpen] = useState(false);
+  const [holidayFormData, setHolidayFormData] = useState({
+    name: '',
+    date: '',
+    type: 'National',
+    description: ''
+  });
+
+  const [holidays, setHolidays] = useState([
+    {
+      id: 1,
+      name: 'New Year\'s Day',
+      date: '2024-01-01',
+      type: 'National',
+      description: 'New Year celebration'
+    },
+    {
+      id: 2,
+      name: 'Independence Day',
+      date: '2024-07-04',
+      type: 'National',
+      description: 'National Independence Day'
+    },
+    {
+      id: 3,
+      name: 'Company Anniversary',
+      date: '2024-03-15',
+      type: 'Company',
+      description: 'Company founding anniversary'
+    },
+    {
+      id: 4,
+      name: 'Christmas Day',
+      date: '2024-12-25',
+      type: 'National',
+      description: 'Christmas celebration'
+    }
+  ]);
+
+  const handleAddHoliday = () => {
+    if (!holidayFormData.name || !holidayFormData.date) {
+      toast.error('Please fill all required fields');
+      return;
+    }
+
+    const newHoliday = {
+      id: Date.now(),
+      name: holidayFormData.name,
+      date: holidayFormData.date,
+      type: holidayFormData.type,
+      description: holidayFormData.description
+    };
+
+    setHolidays([...holidays, newHoliday].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()));
+    setHolidayFormData({ name: '', date: '', type: 'National', description: '' });
+    setIsHolidayModalOpen(false);
+    toast.success('Holiday added successfully');
+  };
+
+  const handleDeleteHoliday = (holidayId: number) => {
+    setHolidays(holidays.filter(h => h.id !== holidayId));
+    toast.success('Holiday deleted successfully');
+  };
+
+  const getTypeColor = (type: string) => {
+    return type === 'National' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800';
+  };
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Company Settings</h1>
-        <p className="text-gray-600">Manage your company configuration</p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Company Settings</h1>
+          <p className="text-gray-600">Manage your company settings and preferences</p>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
+      <Tabs defaultValue="company" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="company" className="flex items-center space-x-2">
+            <Building className="w-4 h-4" />
+            <span>Company</span>
+          </TabsTrigger>
+          <TabsTrigger value="users" className="flex items-center space-x-2">
+            <User className="w-4 h-4" />
+            <span>Users</span>
+          </TabsTrigger>
+          <TabsTrigger value="holidays" className="flex items-center space-x-2">
+            <Calendar className="w-4 h-4" />
+            <span>Holidays</span>
+          </TabsTrigger>
+          <TabsTrigger value="notifications" className="flex items-center space-x-2">
+            <Bell className="w-4 h-4" />
+            <span>Notifications</span>
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="company">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <Building2 className="w-5 h-5 mr-2" />
-                Company Information
-              </CardTitle>
+              <CardTitle>Company Information</CardTitle>
               <CardDescription>Update your company details</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="companyName">Company Name</Label>
-                  <Input id="companyName" defaultValue="Manufacturing Corp" />
+                  <Input id="companyName" defaultValue="Textile Manufacturing Co." />
                 </div>
                 <div>
                   <Label htmlFor="industry">Industry</Label>
-                  <Input id="industry" defaultValue="Manufacturing" />
+                  <Input id="industry" defaultValue="Textile Manufacturing" />
                 </div>
               </div>
               <div>
                 <Label htmlFor="address">Address</Label>
-                <Input id="address" defaultValue="123 Industrial Ave, City, State 12345" />
+                <Textarea id="address" defaultValue="123 Industrial Avenue, Manufacturing District, City 12345" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="phone">Phone</Label>
-                  <Input id="phone" defaultValue="+1 (555) 123-4567" />
+                  <Input id="phone" defaultValue="+1-555-0123" />
                 </div>
                 <div>
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" defaultValue="contact@company.com" />
+                  <Input id="email" type="email" defaultValue="contact@company.com" />
                 </div>
               </div>
               <Button>Save Changes</Button>
             </CardContent>
           </Card>
+        </TabsContent>
 
+        <TabsContent value="users">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <Bell className="w-5 h-5 mr-2" />
-                Notification Settings
-              </CardTitle>
+              <CardTitle>User Management</CardTitle>
+              <CardDescription>Manage user accounts and permissions</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-500">User management features will be available in the next update.</p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="holidays">
+          <Card>
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <div>
+                  <CardTitle>Holiday Management</CardTitle>
+                  <CardDescription>Manage company holidays and observances</CardDescription>
+                </div>
+                <Button onClick={() => setIsHolidayModalOpen(true)}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Holiday
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {holidays.map((holiday) => (
+                  <div key={holiday.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div className="flex items-center space-x-4">
+                      <div className="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-lg">
+                        <Calendar className="w-5 h-5 text-blue-600" />
+                      </div>
+                      <div>
+                        <h3 className="font-medium">{holiday.name}</h3>
+                        <p className="text-sm text-gray-600">{holiday.date}</p>
+                        {holiday.description && (
+                          <p className="text-sm text-gray-500">{holiday.description}</p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      <Badge className={getTypeColor(holiday.type)}>
+                        {holiday.type}
+                      </Badge>
+                      <div className="flex items-center space-x-2">
+                        <Button variant="outline" size="sm">
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleDeleteHoliday(holiday.id)}
+                          className="text-red-600 hover:bg-red-50"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="notifications">
+          <Card>
+            <CardHeader>
+              <CardTitle>Notification Settings</CardTitle>
               <CardDescription>Configure your notification preferences</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>Email Notifications</Label>
-                  <p className="text-sm text-gray-600">Receive email alerts for important events</p>
-                </div>
-                <Switch defaultChecked />
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>Order Updates</Label>
-                  <p className="text-sm text-gray-600">Get notified about order status changes</p>
-                </div>
-                <Switch defaultChecked />
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>Production Alerts</Label>
-                  <p className="text-sm text-gray-600">Alerts for production line issues</p>
-                </div>
-                <Switch defaultChecked />
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>Employee Check-ins</Label>
-                  <p className="text-sm text-gray-600">Notifications for employee attendance</p>
-                </div>
-                <Switch />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Shield className="w-5 h-5 mr-2" />
-                Security Settings
-              </CardTitle>
-              <CardDescription>Manage your security preferences</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>Two-Factor Authentication</Label>
-                  <p className="text-sm text-gray-600">Add an extra layer of security</p>
-                </div>
-                <Switch />
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>Session Timeout</Label>
-                  <p className="text-sm text-gray-600">Auto-logout after inactivity</p>
-                </div>
-                <Switch defaultChecked />
-              </div>
-              <div>
-                <Label htmlFor="sessionDuration">Session Duration (minutes)</Label>
-                <Input id="sessionDuration" type="number" defaultValue="30" className="w-32" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Users className="w-5 h-5 mr-2" />
-                Team Overview
-              </CardTitle>
-            </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <div className="flex justify-between">
-                  <span className="text-sm">Total Employees</span>
-                  <span className="font-medium">85</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm">Active Users</span>
-                  <span className="font-medium">78</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm">Departments</span>
-                  <span className="font-medium">6</span>
-                </div>
-                <Button variant="outline" className="w-full">
-                  Manage Users
-                </Button>
-              </div>
+              <p className="text-gray-500">Notification settings will be available in the next update.</p>
             </CardContent>
           </Card>
+        </TabsContent>
+      </Tabs>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Database className="w-5 h-5 mr-2" />
-                Data & Backup
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div>
-                  <p className="text-sm text-gray-600">Last Backup</p>
-                  <p className="font-medium">Today, 3:00 AM</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Backup Frequency</p>
-                  <p className="font-medium">Daily</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Storage Used</p>
-                  <p className="font-medium">2.4 GB / 10 GB</p>
-                </div>
-                <div className="space-y-2">
-                  <Button variant="outline" className="w-full">
-                    Download Backup
-                  </Button>
-                  <Button variant="outline" className="w-full">
-                    Export Data
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <Button variant="outline" className="w-full justify-start">
-                  <Settings className="w-4 h-4 mr-2" />
-                  System Preferences
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <Users className="w-4 h-4 mr-2" />
-                  User Permissions
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <Database className="w-4 h-4 mr-2" />
-                  Integration Settings
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+      {/* Add Holiday Modal */}
+      <Dialog open={isHolidayModalOpen} onOpenChange={setIsHolidayModalOpen}>
+        <DialogContent className="bg-white/95 backdrop-blur-sm max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold">Add New Holiday</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>Holiday Name *</Label>
+              <Input 
+                value={holidayFormData.name}
+                onChange={(e) => setHolidayFormData({...holidayFormData, name: e.target.value})}
+                placeholder="Enter holiday name"
+              />
+            </div>
+            <div>
+              <Label>Date *</Label>
+              <Input 
+                type="date"
+                value={holidayFormData.date}
+                onChange={(e) => setHolidayFormData({...holidayFormData, date: e.target.value})}
+              />
+            </div>
+            <div>
+              <Label>Type</Label>
+              <select 
+                value={holidayFormData.type}
+                onChange={(e) => setHolidayFormData({...holidayFormData, type: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500/20"
+              >
+                <option value="National">National</option>
+                <option value="Company">Company</option>
+              </select>
+            </div>
+            <div>
+              <Label>Description</Label>
+              <Textarea 
+                value={holidayFormData.description}
+                onChange={(e) => setHolidayFormData({...holidayFormData, description: e.target.value})}
+                placeholder="Enter description (optional)"
+                rows={2}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsHolidayModalOpen(false)}>Cancel</Button>
+            <Button onClick={handleAddHoliday} className="bg-gradient-to-r from-blue-600 to-indigo-700">
+              <Plus className="w-4 h-4 mr-2" />
+              Add Holiday
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
