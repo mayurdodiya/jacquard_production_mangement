@@ -175,7 +175,6 @@ const EmployeeManagement = () => {
         </div>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
-            {/* <Button className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white shadow-lg"> */}
             <Button className="bg-black hover:bg-gray-800 text-white shadow-lg transition-colors duration-300">
               <Plus className="w-4 h-4 mr-2" />
               Add Employee
