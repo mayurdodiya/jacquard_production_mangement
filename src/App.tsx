@@ -23,6 +23,7 @@ import EmployeeDetails from './pages/company/EmployeeDetails';
 import Products from './pages/company/Products';
 import PurchaseOrders from './pages/company/PurchaseOrders';
 import StockManagement from './pages/company/StockManagement';
+import DailyConsumption from './pages/company/DailyConsumption';
 import CustomerManagement from './pages/company/CustomerManagement';
 import ProductionManagement from './pages/company/ProductionManagement';
 import MachineManagement from './pages/company/MachineManagement';
@@ -76,6 +77,7 @@ function App() {
             <Route path="products" element={<Products />} />
             <Route path="purchase-orders" element={<PurchaseOrders />} />
             <Route path="stock" element={<StockManagement />} />
+            <Route path="consumption" element={<DailyConsumption />} />
             <Route path="customers" element={<CustomerManagement />} />
             <Route path="production" element={<ProductionManagement />} />
             <Route path="machines" element={<MachineManagement />} />
