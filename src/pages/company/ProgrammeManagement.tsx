@@ -1,10 +1,10 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useNavigate } from 'react-router-dom';
 import { 
   Calendar, 
   Plus, 
@@ -15,13 +15,16 @@ import {
   Pause,
   CheckCircle
 } from 'lucide-react';
+import AddProgrammeModal from '@/components/modals/AddProgrammeModal';
 
 const ProgrammeManagement = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [machineFilter, setMachineFilter] = useState('All');
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  const programmes = [
+  const [programmes, setProgrammes] = useState([
     {
       id: 'PROG-001',
       name: 'Cotton Weaving Program',
@@ -62,10 +65,18 @@ const ProgrammeManagement = () => {
       progress: 80,
       priority: 'High'
     }
-  ];
+  ]);
 
   const machines = ['All', 'Loom-A1', 'Loom-B2', 'Loom-C3', 'Loom-D4'];
   const statuses = ['All', 'Running', 'Push', 'Completed'];
+
+  const handleAddProgramme = (newProgramme) => {
+    setProgrammes([...programmes, newProgramme]);
+  };
+
+  const handleViewDetails = (programmeId) => {
+    navigate(`/company/programmes/${programmeId}`);
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -109,7 +120,7 @@ const ProgrammeManagement = () => {
           <h1 className="text-3xl font-bold text-gray-900">Programme Management</h1>
           <p className="text-gray-600">Manage your production programmes</p>
         </div>
-        <Button>
+        <Button onClick={() => setIsAddModalOpen(true)}>
           <Plus className="w-4 h-4 mr-2" />
           New Programme
         </Button>
@@ -244,7 +255,11 @@ const ProgrammeManagement = () => {
                       {programme.priority}
                     </Badge>
                   </div>
-                  <Button variant="outline" size="sm">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => handleViewDetails(programme.id)}
+                  >
                     View Details
                   </Button>
                 </div>
@@ -253,6 +268,12 @@ const ProgrammeManagement = () => {
           </div>
         </CardContent>
       </Card>
+
+      <AddProgrammeModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onAdd={handleAddProgramme}
+      />
     </div>
   );
 };

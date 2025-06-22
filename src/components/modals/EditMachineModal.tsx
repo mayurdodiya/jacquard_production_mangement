@@ -36,7 +36,7 @@ const EditMachineModal = ({ isOpen, onClose, onEdit, machine }: EditMachineModal
         type: machine.type || '',
         status: machine.status || 'Active',
         location: machine.location || '',
-        assignedOperator: machine.assignedOper ator || '',
+        assignedOperator: machine.assignedOperator || '',
         maintenanceDate: machine.maintenanceDate || '',
         notes: machine.notes || ''
       });

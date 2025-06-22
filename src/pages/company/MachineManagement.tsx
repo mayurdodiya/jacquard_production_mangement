@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,13 +10,19 @@ import {
   Activity,
   Clock,
   Wrench,
-  AlertTriangle
+  AlertTriangle,
+  Edit
 } from 'lucide-react';
+import AddMachineModal from '@/components/modals/AddMachineModal';
+import EditMachineModal from '@/components/modals/EditMachineModal';
 
 const MachineManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedMachine, setSelectedMachine] = useState(null);
 
-  const machines = [
+  const [machines, setMachines] = useState([
     {
       id: 1,
       machineId: 'M001',
@@ -28,7 +33,11 @@ const MachineManagement = () => {
       estimatedCompletion: '2024-01-21 14:00',
       efficiency: 95,
       lastMaintenance: '2024-01-15',
-      nextMaintenance: '2024-02-15'
+      nextMaintenance: '2024-02-15',
+      location: 'Floor A',
+      assignedOperator: 'John Doe',
+      model: 'WM-2000',
+      notes: 'Running smoothly'
     },
     {
       id: 2,
@@ -40,7 +49,11 @@ const MachineManagement = () => {
       estimatedCompletion: 'N/A',
       efficiency: 88,
       lastMaintenance: '2024-01-10',
-      nextMaintenance: '2024-02-10'
+      nextMaintenance: '2024-02-10',
+      location: 'Floor B',
+      assignedOperator: 'Jane Smith',
+      model: 'DM-1500',
+      notes: 'Ready for next batch'
     },
     {
       id: 3,
@@ -52,7 +65,11 @@ const MachineManagement = () => {
       estimatedCompletion: 'N/A',
       efficiency: 92,
       lastMaintenance: '2024-01-20',
-      nextMaintenance: '2024-02-20'
+      nextMaintenance: '2024-02-20',
+      location: 'Floor C',
+      assignedOperator: 'Mike Johnson',
+      model: 'CM-800',
+      notes: 'Under maintenance'
     },
     {
       id: 4,
@@ -64,9 +81,26 @@ const MachineManagement = () => {
       estimatedCompletion: '2024-01-21 16:30',
       efficiency: 97,
       lastMaintenance: '2024-01-12',
-      nextMaintenance: '2024-02-12'
+      nextMaintenance: '2024-02-12',
+      location: 'Floor D',
+      assignedOperator: 'Sarah Wilson',
+      model: 'SM-600',
+      notes: 'High efficiency operation'
     }
-  ];
+  ]);
+
+  const handleAddMachine = (newMachine) => {
+    setMachines([...machines, { ...newMachine, id: machines.length + 1 }]);
+  };
+
+  const handleEditMachine = (updatedMachine) => {
+    setMachines(machines.map(m => m.id === updatedMachine.id ? updatedMachine : m));
+  };
+
+  const handleEditClick = (machine) => {
+    setSelectedMachine(machine);
+    setIsEditModalOpen(true);
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -95,7 +129,7 @@ const MachineManagement = () => {
           <h1 className="text-3xl font-bold text-gray-900">Machine Management</h1>
           <p className="text-gray-600">Monitor and manage all production machines</p>
         </div>
-        <Button>
+        <Button onClick={() => setIsAddModalOpen(true)}>
           <Plus className="w-4 h-4 mr-2" />
           Add Machine
         </Button>
@@ -205,8 +239,14 @@ const MachineManagement = () => {
                     </td>
                     <td className="p-2">
                       <div className="flex space-x-2">
-                        <Button size="sm" variant="outline">Edit</Button>
-                        <Button size="sm" variant="outline">Assign</Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => handleEditClick(machine)}
+                        >
+                          <Edit className="w-3 h-3 mr-1" />
+                          Edit
+                        </Button>
                       </div>
                     </td>
                   </tr>
@@ -216,6 +256,19 @@ const MachineManagement = () => {
           </div>
         </CardContent>
       </Card>
+
+      <AddMachineModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onAdd={handleAddMachine}
+      />
+
+      <EditMachineModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onEdit={handleEditMachine}
+        machine={selectedMachine}
+      />
     </div>
   );
 };
