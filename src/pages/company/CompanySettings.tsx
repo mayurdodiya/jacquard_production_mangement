@@ -30,34 +30,29 @@ const CompanySettings = () => {
   });
 
   const [holidays, setHolidays] = useState([
-    {
-      id: 1,
-      name: 'New Year\'s Day',
-      date: '2024-01-01',
-      type: 'National',
-      description: 'New Year celebration'
-    },
-    {
-      id: 2,
-      name: 'Independence Day',
-      date: '2024-07-04',
-      type: 'National',
-      description: 'National Independence Day'
-    },
-    {
-      id: 3,
-      name: 'Company Anniversary',
-      date: '2024-03-15',
-      type: 'Company',
-      description: 'Company founding anniversary'
-    },
-    {
-      id: 4,
-      name: 'Christmas Day',
-      date: '2024-12-25',
-      type: 'National',
-      description: 'Christmas celebration'
-    }
+    // Q1 Holidays
+    { id: 1, name: 'New Year\'s Day', date: '2024-01-01', type: 'National', description: 'New Year celebration' },
+    { id: 2, name: 'Martin Luther King Jr. Day', date: '2024-01-15', type: 'National', description: 'Federal holiday' },
+    { id: 3, name: 'Presidents Day', date: '2024-02-19', type: 'National', description: 'Federal holiday' },
+    { id: 4, name: 'Company Foundation Day', date: '2024-03-15', type: 'Company', description: 'Company founding anniversary' },
+    
+    // Q2 Holidays
+    { id: 5, name: 'Memorial Day', date: '2024-05-27', type: 'National', description: 'Federal holiday' },
+    { id: 6, name: 'Juneteenth', date: '2024-06-19', type: 'National', description: 'Federal holiday' },
+    
+    // Q3 Holidays
+    { id: 7, name: 'Independence Day', date: '2024-07-04', type: 'National', description: 'National Independence Day' },
+    { id: 8, name: 'Labor Day', date: '2024-09-02', type: 'National', description: 'Federal holiday' },
+    { id: 9, name: 'Company Summer Break', date: '2024-08-15', type: 'Company', description: 'Annual summer break' },
+    
+    // Q4 Holidays
+    { id: 10, name: 'Columbus Day', date: '2024-10-14', type: 'National', description: 'Federal holiday' },
+    { id: 11, name: 'Veterans Day', date: '2024-11-11', type: 'National', description: 'Federal holiday' },
+    { id: 12, name: 'Thanksgiving Day', date: '2024-11-28', type: 'National', description: 'Thanksgiving celebration' },
+    { id: 13, name: 'Black Friday', date: '2024-11-29', type: 'Company', description: 'Company holiday' },
+    { id: 14, name: 'Christmas Eve', date: '2024-12-24', type: 'Company', description: 'Christmas Eve holiday' },
+    { id: 15, name: 'Christmas Day', date: '2024-12-25', type: 'National', description: 'Christmas celebration' },
+    { id: 16, name: 'New Year\'s Eve', date: '2024-12-31', type: 'Company', description: 'New Year\'s Eve holiday' }
   ]);
 
   const handleAddHoliday = () => {
@@ -87,6 +82,20 @@ const CompanySettings = () => {
 
   const getTypeColor = (type: string) => {
     return type === 'National' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800';
+  };
+
+  const getQuarterHolidays = (quarter: number) => {
+    const quarterMonths = {
+      1: [1, 2, 3],
+      2: [4, 5, 6],
+      3: [7, 8, 9],
+      4: [10, 11, 12]
+    };
+    
+    return holidays.filter(holiday => {
+      const month = new Date(holiday.date).getMonth() + 1;
+      return quarterMonths[quarter as keyof typeof quarterMonths].includes(month);
+    });
   };
 
   return (
@@ -171,8 +180,8 @@ const CompanySettings = () => {
             <CardHeader>
               <div className="flex justify-between items-center">
                 <div>
-                  <CardTitle>Holiday Management</CardTitle>
-                  <CardDescription>Manage company holidays and observances</CardDescription>
+                  <CardTitle>Holiday Management - Full Year 2024</CardTitle>
+                  <CardDescription>Manage company holidays and observances for the entire year</CardDescription>
                 </div>
                 <Button onClick={() => setIsHolidayModalOpen(true)}>
                   <Plus className="w-4 h-4 mr-2" />
@@ -181,41 +190,69 @@ const CompanySettings = () => {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {holidays.map((holiday) => (
-                  <div key={holiday.id} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex items-center space-x-4">
-                      <div className="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-lg">
-                        <Calendar className="w-5 h-5 text-blue-600" />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {[1, 2, 3, 4].map((quarter) => (
+                  <Card key={quarter}>
+                    <CardHeader>
+                      <CardTitle className="text-lg">Q{quarter} - {quarter === 1 ? 'Jan-Mar' : quarter === 2 ? 'Apr-Jun' : quarter === 3 ? 'Jul-Sep' : 'Oct-Dec'}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        {getQuarterHolidays(quarter).map((holiday) => (
+                          <div key={holiday.id} className="flex items-center justify-between p-3 border rounded-lg">
+                            <div className="flex items-center space-x-3">
+                              <div className="flex items-center justify-center w-8 h-8 bg-blue-100 rounded-lg">
+                                <Calendar className="w-4 h-4 text-blue-600" />
+                              </div>
+                              <div>
+                                <h4 className="font-medium text-sm">{holiday.name}</h4>
+                                <p className="text-xs text-gray-600">{holiday.date}</p>
+                                {holiday.description && (
+                                  <p className="text-xs text-gray-500">{holiday.description}</p>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Badge className={getTypeColor(holiday.type)} variant="outline">
+                                {holiday.type}
+                              </Badge>
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => handleDeleteHoliday(holiday.id)}
+                                className="text-red-600 hover:bg-red-50"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                      <div>
-                        <h3 className="font-medium">{holiday.name}</h3>
-                        <p className="text-sm text-gray-600">{holiday.date}</p>
-                        {holiday.description && (
-                          <p className="text-sm text-gray-500">{holiday.description}</p>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-4">
-                      <Badge className={getTypeColor(holiday.type)}>
-                        {holiday.type}
-                      </Badge>
-                      <div className="flex items-center space-x-2">
-                        <Button variant="outline" size="sm">
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => handleDeleteHoliday(holiday.id)}
-                          className="text-red-600 hover:bg-red-50"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
+                    </CardContent>
+                  </Card>
                 ))}
+              </div>
+              
+              <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+                <h3 className="font-medium text-blue-900 mb-2">Holiday Summary</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                  <div>
+                    <span className="text-blue-700">Total Holidays:</span>
+                    <span className="font-medium ml-2">{holidays.length}</span>
+                  </div>
+                  <div>
+                    <span className="text-blue-700">National:</span>
+                    <span className="font-medium ml-2">{holidays.filter(h => h.type === 'National').length}</span>
+                  </div>
+                  <div>
+                    <span className="text-blue-700">Company:</span>
+                    <span className="font-medium ml-2">{holidays.filter(h => h.type === 'Company').length}</span>
+                  </div>
+                  <div>
+                    <span className="text-blue-700">Working Days:</span>
+                    <span className="font-medium ml-2">{365 - holidays.length}</span>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>

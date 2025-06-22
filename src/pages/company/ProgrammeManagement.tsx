@@ -65,6 +65,7 @@ const ProgrammeManagement = () => {
   ];
 
   const machines = ['All', 'Loom-A1', 'Loom-B2', 'Loom-C3', 'Loom-D4'];
+  const statuses = ['All', 'Running', 'Push', 'Completed'];
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -181,10 +182,11 @@ const ProgrammeManagement = () => {
                   <SelectValue placeholder="Filter by status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="All">All Status</SelectItem>
-                  <SelectItem value="Running">Running</SelectItem>
-                  <SelectItem value="Push">Push</SelectItem>
-                  <SelectItem value="Completed">Completed</SelectItem>
+                  {statuses.map((status) => (
+                    <SelectItem key={status} value={status}>
+                      {status === 'All' ? 'All Status' : status}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -197,7 +199,7 @@ const ProgrammeManagement = () => {
                 <SelectContent>
                   {machines.map((machine) => (
                     <SelectItem key={machine} value={machine}>
-                      {machine}
+                      {machine === 'All' ? 'All Machines' : machine}
                     </SelectItem>
                   ))}
                 </SelectContent>

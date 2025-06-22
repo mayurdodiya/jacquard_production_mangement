@@ -14,11 +14,15 @@ import {
   Eye
 } from 'lucide-react';
 import QRCodeModal from '@/components/modals/QRCodeModal';
+import EditProductModal from '@/components/modals/EditProductModal';
+import ViewProductModal from '@/components/modals/ViewProductModal';
 import { toast } from 'sonner';
 
 const Products = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isQRModalOpen, setIsQRModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   const [products] = useState([
@@ -78,9 +82,20 @@ const Products = () => {
     setIsQRModalOpen(true);
   };
 
-  const handleEditProduct = (productId: string) => {
-    console.log('Edit product:', productId);
-    toast.info('Edit product functionality - coming soon');
+  const handleEditProduct = (product: any) => {
+    setSelectedProduct(product);
+    setIsEditModalOpen(true);  
+  };
+
+  const handleUpdateProduct = (updatedProduct: any) => {
+    setProducts(products.map(product => 
+      product.id === updatedProduct.id ? updatedProduct : product
+    ));
+  };
+
+  const handleViewProduct = (product: any) => {
+    setSelectedProduct(product);  
+    setIsViewModalOpen(true);
   };
 
   const handleDeleteProduct = (productId: string) => {
@@ -170,7 +185,11 @@ const Products = () => {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredProducts.map((product) => (
-              <Card key={product.id} className="hover:shadow-lg transition-shadow">
+              <Card 
+                key={product.id} 
+                className="hover:shadow-lg transition-shadow cursor-pointer"
+                onClick={() => handleViewProduct(product)}
+              >
                 <CardContent className="p-4">
                   <div className="aspect-square mb-4 overflow-hidden rounded-lg">
                     <img 
@@ -197,7 +216,10 @@ const Products = () => {
                       <Button 
                         size="sm" 
                         variant="outline" 
-                        onClick={() => handleViewQR(product)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleViewQR(product);
+                        }}
                         className="flex-1"
                       >
                         <QrCode className="w-4 h-4 mr-1" />
@@ -206,14 +228,20 @@ const Products = () => {
                       <Button 
                         size="sm" 
                         variant="outline"
-                        onClick={() => handleEditProduct(product.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEditProduct(product);
+                        }}
                       >
                         <Edit className="w-4 h-4" />
                       </Button>
                       <Button 
                         size="sm" 
                         variant="outline"
-                        onClick={() => handleDeleteProduct(product.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteProduct(product.id);
+                        }}
                         className="text-red-600 hover:bg-red-50"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -231,6 +259,19 @@ const Products = () => {
         isOpen={isQRModalOpen}
         onClose={() => setIsQRModalOpen(false)}
         product={selectedProduct || { id: '', name: '', image: '' }}
+      />
+      
+      <EditProductModal 
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onEdit={handleUpdateProduct}
+        product={selectedProduct}
+      />
+      
+      <ViewProductModal 
+        isOpen={isViewModalOpen}
+        onClose={() => setIsViewModalOpen(false)}
+        product={selectedProduct}
       />
     </div>
   );

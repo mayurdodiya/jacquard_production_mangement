@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,11 +13,16 @@ import {
   Edit
 } from 'lucide-react';
 import AddStockModal from '@/components/modals/AddStockModal';
+import EditStockModal from '@/components/modals/EditStockModal';
+import ViewStockModal from '@/components/modals/ViewStockModal';
 import { toast } from 'sonner';
 
 const StockManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [selectedStockItem, setSelectedStockItem] = useState(null);
 
   const [stockItems, setStockItems] = useState([
     {
@@ -89,8 +93,20 @@ const StockManagement = () => {
   };
 
   const handleEditStock = (itemId: number) => {
-    console.log('Edit stock item:', itemId);
-    toast.info('Edit stock functionality - coming soon');
+    const item = stockItems.find(item => item.id === itemId);
+    setSelectedStockItem(item);
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdateStock = (updatedItem: any) => {
+    setStockItems(stockItems.map(item => 
+      item.id === updatedItem.id ? updatedItem : item
+    ));
+  };
+
+  const handleViewStock = (item: any) => {
+    setSelectedStockItem(item);
+    setIsViewModalOpen(true);
   };
 
   const filteredItems = stockItems.filter(item =>
@@ -174,7 +190,11 @@ const StockManagement = () => {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredItems.map((item) => (
-              <Card key={item.id} className="hover:shadow-lg transition-shadow">
+              <Card 
+                key={item.id} 
+                className="hover:shadow-lg transition-shadow cursor-pointer"
+                onClick={() => handleViewStock(item)}
+              >
                 <CardContent className="p-4">
                   <div className="aspect-square mb-4 overflow-hidden rounded-lg">
                     <img 
@@ -206,7 +226,10 @@ const StockManagement = () => {
                         size="sm" 
                         variant="outline" 
                         className="flex-1"
-                        onClick={() => handleEditStock(item.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEditStock(item.id);
+                        }}
                       >
                         <Edit className="w-4 h-4 mr-1" />
                         Edit
@@ -224,6 +247,19 @@ const StockManagement = () => {
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onAdd={handleAddStock}
+      />
+      
+      <EditStockModal 
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onEdit={handleUpdateStock}
+        stockItem={selectedStockItem}
+      />
+      
+      <ViewStockModal 
+        isOpen={isViewModalOpen}
+        onClose={() => setIsViewModalOpen(false)}
+        stockItem={selectedStockItem}
       />
     </div>
   );
