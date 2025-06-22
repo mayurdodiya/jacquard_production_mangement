@@ -25,7 +25,7 @@ const Products = () => {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
-  const [products] = useState([
+  const [products, setProducts] = useState([
     {
       id: 'PRD-001',
       name: 'Premium Cotton T-Shirt',
