@@ -11,58 +11,108 @@ import {
   Mail,
   Phone,
   MapPin,
-  Calendar
+  Calendar,
+  Eye,
+  Edit,
+  Trash2
 } from 'lucide-react';
+import AddCustomerModal from '@/components/modals/AddCustomerModal';
+import EditCustomerModal from '@/components/modals/EditCustomerModal';
+import ViewCustomerModal from '@/components/modals/ViewCustomerModal';
+import { toast } from 'sonner';
 
 const CustomerManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
 
-  const customers = [
+
+
+  const [customers, setCustomers] = useState([
     {
-      id: 1,
-      name: 'ABC Textiles Ltd',
-      contact: 'John Smith',
-      email: 'john@abctextiles.com',
-      phone: '+1 555-0101',
-      address: '123 Business St, City, State',
+      id: 'CUST-001',
+      name: 'John Smith',
+      email: 'john.smith@example.com',
+      phone: '+1-555-0123',
+      contact: '+1-555-0123',
+      company: 'ABC Manufacturing',
+      address: '123 Industrial Ave, New York, NY',
       status: 'Active',
-      joinDate: '2023-01-15',
-      totalOrders: 25,
-      totalValue: 125000
+      createdDate: '2024-01-15',
+      notes: 'Long-term customer, bulk orders',
+      totalOrders: 22,
+      totalValue: 100,
     },
     {
-      id: 2,
-      name: 'Global Fashion Co',
-      contact: 'Sarah Johnson',
-      email: 'sarah@globalfashion.com',
-      phone: '+1 555-0102',
-      address: '456 Fashion Ave, City, State',
+      id: 'CUST-002',
+      name: 'Sarah Johnson',
+      email: 'sarah.johnson@xyz.com',
+      phone: '+1-555-0456',
+      company: 'XYZ Corp',
+      address: '456 Business St, Los Angeles, CA',
       status: 'Active',
-      joinDate: '2023-03-20',
-      totalOrders: 18,
-      totalValue: 89000
+      createdDate: '2024-01-10',
+      notes: 'Regular monthly orders',
+      totalOrders: 22,
+      totalValue: 100,
     },
     {
-      id: 3,
-      name: 'Premium Garments',
-      contact: 'Mike Wilson',
-      email: 'mike@premiumgarments.com',
-      phone: '+1 555-0103',
-      address: '789 Premium Blvd, City, State',
+      id: 'CUST-003',
+      name: 'Mike Wilson',
+      email: 'mike.wilson@tech.com',
+      phone: '+1-555-0789',
+      company: 'Tech Solutions',
+      address: '789 Tech Park, San Francisco, CA',
       status: 'Inactive',
-      joinDate: '2022-11-10',
-      totalOrders: 12,
-      totalValue: 67000
+      createdDate: '2024-01-05',
+      notes: 'Seasonal customer',
+      totalOrders: 22,
+      totalValue: 100,
     }
-  ];
+  ]);
 
   const getStatusColor = (status: string) => {
     return status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800';
   };
 
+    const handleAddCustomer = (newCustomer: any) => {
+    setCustomers([newCustomer, ...customers]);
+  };
+
+    const handleEditCustomer = (customerId: string) => {
+    const customer = customers.find(c => c.id === customerId);
+    setSelectedCustomer(customer);
+    setIsEditModalOpen(true);
+  };
+
+    const handleUpdateCustomer = (updatedCustomer: any) => {
+    setCustomers(customers.map(c => c.id === updatedCustomer.id ? updatedCustomer : c));
+  };
+
+    const handleViewCustomer = (customerId: string) => {
+    const customer = customers.find(c => c.id === customerId);
+    setSelectedCustomer(customer);
+    setIsViewModalOpen(true);
+  };
+
+    const handleDeleteCustomer = (customerId: string) => {
+    setCustomers(customers.filter(c => c.id !== customerId));
+    toast.success('Customer deleted successfully');
+  };
+
+
+  // const filteredCustomers = customers.filter(customer =>
+  //   customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //   customer.contact.toLowerCase().includes(searchTerm.toLowerCase())
+  // );
+  
   const filteredCustomers = customers.filter(customer =>
     customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    customer.contact.toLowerCase().includes(searchTerm.toLowerCase())
+    customer.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    customer.contact.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    customer.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -72,7 +122,7 @@ const CustomerManagement = () => {
           <h1 className="text-3xl font-bold text-gray-900">Customer Management</h1>
           <p className="text-gray-600">Manage your customers and relationships</p>
         </div>
-        <Button>
+            <Button onClick={() => setIsAddModalOpen(true)}>
           <Plus className="w-4 h-4 mr-2" />
           Add Customer
         </Button>
@@ -170,18 +220,43 @@ const CustomerManagement = () => {
                         {customer.phone}
                       </div>
                     </td>
-                    <td className="p-2">{customer.totalOrders}</td>
-                    <td className="p-2">${customer.totalValue.toLocaleString()}</td>
+                    <td className="p-2">{customer?.totalOrders}</td>
+                    <td className="p-2">${customer?.totalValue.toLocaleString()}</td>
                     <td className="p-2">
                       <Badge className={getStatusColor(customer.status)}>
                         {customer.status}
                       </Badge>
                     </td>
                     <td className="p-2">
-                      <div className="flex space-x-2">
+                      {/* <div className="flex space-x-2">
                         <Button size="sm" variant="outline">Edit</Button>
                         <Button size="sm" variant="outline">View</Button>
-                      </div>
+                      </div> */}
+
+                      <div className="flex items-center space-x-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => handleViewCustomer(customer.id)}
+                    >
+                      <Eye className="w-4 h-4" />
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => handleEditCustomer(customer.id)}
+                    >
+                      <Edit className="w-4 h-4" />
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => handleDeleteCustomer(customer.id)}
+                      className="text-red-600 hover:bg-red-50"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
                     </td>
                   </tr>
                 ))}
@@ -190,6 +265,26 @@ const CustomerManagement = () => {
           </div>
         </CardContent>
       </Card>
+
+      <AddCustomerModal 
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onAdd={handleAddCustomer}
+      />
+
+      <EditCustomerModal 
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onEdit={handleUpdateCustomer}
+        customer={selectedCustomer}
+      />
+
+      <ViewCustomerModal 
+        isOpen={isViewModalOpen}
+        onClose={() => setIsViewModalOpen(false)}
+        customer={selectedCustomer}
+      />
+
     </div>
   );
 };

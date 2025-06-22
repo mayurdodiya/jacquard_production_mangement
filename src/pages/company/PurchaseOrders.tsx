@@ -21,6 +21,7 @@ import {
   Trash2,
   Eye,
   Calendar,
+  FileText,
 } from "lucide-react";
 import {
   Select,
@@ -38,6 +39,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@radix-ui/react-dialog";
+import AddPurchaseOrderModal from "@/components/modals/AddPurchaseOrderModal";
+import EditPurchaseOrderModal from "@/components/modals/EditPurchaseOrderModal";
+import { toast } from 'sonner';
 
 interface Company {
   id: string;
@@ -56,6 +60,8 @@ const PurchaseOrders = () => {
   const [statusFilter, setStatusFilter] = useState("All");
   const [dateFilter, setDateFilter] = useState("");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -85,7 +91,7 @@ const PurchaseOrders = () => {
     setIsAddDialogOpen(false);
   };
 
-  const orders = [
+  const [orders, setOrders] = useState([
     {
       id: "PO-001",
       supplier: "Raw Material Suppliers Ltd.",
@@ -126,7 +132,7 @@ const PurchaseOrders = () => {
       expectedDate: "2024-01-18",
       priority: "Medium",
     },
-  ];
+  ]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -158,8 +164,19 @@ const PurchaseOrders = () => {
     console.log("Add new purchase order");
   };
 
+  const handleUpdateOrder = (updatedOrder: any) => {
+    setOrders(orders.map((o) => (o.id === updatedOrder.id ? updatedOrder : o)));
+  };
+
   const handleEditOrder = (orderId: string) => {
-    console.log("Edit order:", orderId);
+    const order = orders.find((o) => o.id === orderId);
+    setSelectedOrder(order);
+    setIsEditModalOpen(true);
+  };
+
+  const handleGenerateInvoice = (orderId: string) => {
+    console.log("Generate invoice for:", orderId);
+    toast.success("Invoice generated successfully");
   };
 
   const handleDeleteOrder = (orderId: string) => {
@@ -190,14 +207,13 @@ const PurchaseOrders = () => {
             Manage your purchase orders and inventory
           </p>
         </div>
-        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white shadow-lg">
-              <Plus className="w-4 h-4 mr-2" />
-              Add New Purchase Order
-            </Button>
-          </DialogTrigger>
-        </Dialog>
+        <Button
+          onClick={() => setIsAddDialogOpen(true)}
+          className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white shadow-lg"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          New Purchase Order
+        </Button>
       </div>
 
       {/* Stats Cards */}
@@ -380,6 +396,14 @@ const PurchaseOrders = () => {
                     <Button
                       variant="outline"
                       size="sm"
+                      onClick={() => handleGenerateInvoice(order.id)}
+                      className="border-green-200 text-green-600 hover:bg-green-50"
+                    >
+                      <FileText className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={() => handleDeleteOrder(order.id)}
                       className="border-red-200 text-red-600 hover:bg-red-50"
                     >
@@ -394,7 +418,7 @@ const PurchaseOrders = () => {
       </Card>
 
       {/* Add Employee Dialog */}
-      {
+      {/* {
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogContent className="sm:max-w-[525px] rounded-lg bg-white shadow-xl p-6">
             <DialogHeader>
@@ -485,49 +509,49 @@ const PurchaseOrders = () => {
               </div>
 
               <div className="grid grid-cols-4 items-center gap-4">
-  <Label htmlFor="product" className="text-right">
-    Product
-  </Label>
-  <Select
-    value={formData.product}
-    onValueChange={(value) => setFormData({ ...formData, product: value })}
-  >
-    <SelectTrigger
-      id="product"
-      className="col-span-3 px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-    >
-      <SelectValue placeholder="Select a product" />
-    </SelectTrigger>
-    <SelectContent className="bg-white border border-slate-200 rounded-md shadow-lg">
-      <SelectItem
-        value="Cotton Thread"
-        className="px-3 py-2 hover:bg-slate-100 cursor-pointer"
-      >
-        Cotton Thread
-      </SelectItem>
-      <SelectItem
-        value="Polyester Fabric"
-        className="px-3 py-2 hover:bg-slate-100 cursor-pointer"
-      >
-        Polyester Fabric
-      </SelectItem>
-      <SelectItem
-        value="Dye Solution"
-        className="px-3 py-2 hover:bg-slate-100 cursor-pointer"
-      >
-        Dye Solution
-      </SelectItem>
-      <SelectItem
-        value="Motor Components"
-        className="px-3 py-2 hover:bg-slate-100 cursor-pointer"
-      >
-        Motor Components
-      </SelectItem>
-    </SelectContent>
-  </Select>
-</div>
-
-        
+                <Label htmlFor="product" className="text-right">
+                  Product
+                </Label>
+                <Select
+                  value={formData.product}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, product: value })
+                  }
+                >
+                  <SelectTrigger
+                    id="product"
+                    className="col-span-3 px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <SelectValue placeholder="Select a product" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white border border-slate-200 rounded-md shadow-lg">
+                    <SelectItem
+                      value="Cotton Thread"
+                      className="px-3 py-2 hover:bg-slate-100 cursor-pointer"
+                    >
+                      Cotton Thread
+                    </SelectItem>
+                    <SelectItem
+                      value="Polyester Fabric"
+                      className="px-3 py-2 hover:bg-slate-100 cursor-pointer"
+                    >
+                      Polyester Fabric
+                    </SelectItem>
+                    <SelectItem
+                      value="Dye Solution"
+                      className="px-3 py-2 hover:bg-slate-100 cursor-pointer"
+                    >
+                      Dye Solution
+                    </SelectItem>
+                    <SelectItem
+                      value="Motor Components"
+                      className="px-3 py-2 hover:bg-slate-100 cursor-pointer"
+                    >
+                      Motor Components
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             <DialogFooter>
               <Button
@@ -539,7 +563,21 @@ const PurchaseOrders = () => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      }
+      } */}
+
+      {/* PopUp Modals */}
+      <AddPurchaseOrderModal
+        isOpen={isAddDialogOpen}
+        onClose={() => setIsAddDialogOpen(false)}
+        onAdd={handleAddOrder}
+      />
+
+      <EditPurchaseOrderModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onEdit={handleUpdateOrder}
+        order={selectedOrder}
+      />
     </div>
   );
 };

@@ -40,6 +40,8 @@ import EmployeeAttendance from "@/pages/employee/EmployeeAttendance";
 
 import NotFound from "./pages/NotFound";
 import EmployeeDetails from "./pages/company/EmployeeDetails";
+import Products from "./pages/company/Products";
+import DailyConsumption from "./pages/company/DailyConsumption";
 
 const queryClient = new QueryClient();
 
@@ -75,8 +77,10 @@ const App = () => (
               <Route path="profile" element={<CompanyProfile />} />
               <Route path="employees" element={<EmployeeManagement />} />
               <Route path="employees/employee-details" element={<EmployeeDetails />} />
+              <Route path="products" element={<Products />} />
               <Route path="purchase-orders" element={<PurchaseOrders />} />
               <Route path="stock" element={<StockManagement />} />
+              <Route path="consumption" element={<DailyConsumption />} />
               <Route path="customers" element={<CustomerManagement />} />
               <Route path="production" element={<ProductionManagement />} />
               <Route path="machines" element={<MachineManagement />} />
