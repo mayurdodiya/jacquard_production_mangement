@@ -11,57 +11,138 @@ import {
   Download,
   Calendar,
   Clock,
-  TrendingUp
+  TrendingUp,
+  Edit
 } from 'lucide-react';
+import AddProductionModal from '@/components/modals/AddProductionModal';
+import EditProductionModal from '@/components/modals/EditProductionModal';
+import ViewProductionModal from '@/components/modals/ViewProductionModal';
 
 const ProductionManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [dateFilter, setDateFilter] = useState('');
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [selectedProduction, setSelectedProduction] = useState(null);
 
-  const productions = [
+
+  // const productions = [
+  //   {
+  //     id: 1,
+  //     machineId: 'M001',
+  //     machineName: 'Weaving Machine 1',
+  //     programme: 'Cotton Fabric Pattern A',
+  //     employeeName: 'John Doe',
+  //     quantity: 150,
+  //     unit: 'meters',
+  //     startTime: '08:00',
+  //     endTime: '16:00',
+  //     date: '2024-01-20',
+  //     status: 'Completed',
+  //     quality: 'A Grade'
+  //   },
+  //   {
+  //     id: 2,
+  //     machineId: 'M002',
+  //     machineName: 'Dyeing Machine 1',
+  //     programme: 'Blue Dye Process',
+  //     employeeName: 'Jane Smith',
+  //     quantity: 200,
+  //     unit: 'kg',
+  //     startTime: '09:00',
+  //     endTime: '17:00',
+  //     date: '2024-01-20',
+  //     status: 'In Progress',
+  //     quality: 'Pending'
+  //   },
+  //   {
+  //     id: 3,
+  //     machineId: 'M003',
+  //     machineName: 'Cutting Machine 1',
+  //     programme: 'Shirt Pattern Cut',
+  //     employeeName: 'Mike Johnson',
+
+  //     quantity: 300,
+  //     unit: 'pieces',
+  //     startTime: '07:00',
+  //     endTime: '15:00',
+  //     date: '2024-01-19',
+  //     quality: 'A Grade',
+  //     status: 'Completed',
+  //   }
+  // ];
+
+  const [productions, setProductions] = useState([
     {
-      id: 1,
-      machineId: 'M001',
-      machineName: 'Weaving Machine 1',
-      programme: 'Cotton Fabric Pattern A',
-      employeeName: 'John Doe',
-      quantity: 150,
-      unit: 'meters',
-      startTime: '08:00',
-      endTime: '16:00',
-      date: '2024-01-20',
-      status: 'Completed',
-      quality: 'A Grade'
-    },
-    {
-      id: 2,
-      machineId: 'M002',
-      machineName: 'Dyeing Machine 1',
-      programme: 'Blue Dye Process',
-      employeeName: 'Jane Smith',
-      quantity: 200,
-      unit: 'kg',
-      startTime: '09:00',
-      endTime: '17:00',
-      date: '2024-01-20',
-      status: 'In Progress',
-      quality: 'Pending'
-    },
-    {
-      id: 3,
+      id: 'PROD-001',
       machineId: 'M003',
+      productName: 'Cotton T-Shirts',
       machineName: 'Cutting Machine 1',
       programme: 'Shirt Pattern Cut',
       employeeName: 'Mike Johnson',
-      quantity: 300,
       unit: 'pieces',
       startTime: '07:00',
       endTime: '15:00',
       date: '2024-01-19',
+      quality: 'A Grade',
+
+      batchNumber: 'CT-001',
+      quantity: 500,
+      targetDate: '2024-01-25',
+      priority: 'High',
+      assignedTeam: 'Team Alpha',
+      status: 'In Progress',
+      progress: 65,
+      createdDate: '2024-01-20',
+      notes: 'Rush order for premium cotton t-shirts'
+    },
+    {
+      id: 'PROD-002',
+      machineId: 'M003',
+      machineName: 'Cutting Machine 1',
+      programme: 'Shirt Pattern Cut',
+      employeeName: 'Mike Johnson',
+      unit: 'pieces',
+      startTime: '07:00',
+      endTime: '15:00',
+      date: '2024-01-19',
+      quality: 'A Grade',
+
+      productName: 'Silk Scarves',
+      batchNumber: 'SS-002',
+      quantity: 200,
+      targetDate: '2024-01-28',
+      priority: 'Medium',
+      assignedTeam: 'Team Beta',
+      status: 'Planned',
+      progress: 0,
+      createdDate: '2024-01-22',
+      notes: 'Elegant silk scarves collection'
+    },
+    {
+      id: 'PROD-003',
+      machineId: 'M003',
+      machineName: 'Cutting Machine 1',
+      programme: 'Shirt Pattern Cut',
+      employeeName: 'Mike Johnson',
+      unit: 'pieces',
+      startTime: '07:00',
+      endTime: '15:00',
+      date: '2024-01-19',
+      quality: 'A Grade',
+      productName: 'Denim Jackets',
+      batchNumber: 'DJ-003',
+      quantity: 100,
+      targetDate: '2024-01-30',
+      priority: 'Low',
+      assignedTeam: 'Team Gamma',
       status: 'Completed',
-      quality: 'A Grade'
+      progress: 100,
+      createdDate: '2024-01-15',
+      notes: 'Classic denim jacket production'
     }
-  ];
+  ]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -70,6 +151,27 @@ const ProductionManagement = () => {
       case 'Pending': return 'bg-blue-100 text-blue-800';
       default: return 'bg-gray-100 text-gray-800';
     }
+  };
+
+
+  const handleAddProduction = (newProduction: any) => {
+    setProductions([newProduction, ...productions]);
+  };
+
+  const handleUpdateProduction = (updatedProduction: any) => {
+    setProductions(productions.map(prod => 
+      prod.id === updatedProduction.id ? updatedProduction : prod
+    ));
+  };
+
+  const handleEditProduction = (production: any) => {
+    setSelectedProduction(production);
+    setIsEditModalOpen(true);
+  };
+
+  const handleViewProduction = (production: any) => {
+    setSelectedProduction(production);
+    setIsViewModalOpen(true);
   };
 
   const filteredProductions = productions.filter(production =>
@@ -89,10 +191,14 @@ const ProductionManagement = () => {
             <Download className="w-4 h-4 mr-2" />
             Export Excel
           </Button>
-          <Button>
+          {/* <Button>
             <Plus className="w-4 h-4 mr-2" />
             Add Production
-          </Button>
+          </Button> */}
+          <Button onClick={() => setIsAddModalOpen(true)}>
+          <Plus className="w-4 h-4 mr-2" />
+          Add Production
+        </Button>
         </div>
       </div>
 
@@ -171,12 +277,13 @@ const ProductionManagement = () => {
                 <tr className="border-b">
                   <th className="text-left p-2">Machine</th>
                   <th className="text-left p-2">Programme</th>
+                  <th className="text-left p-2">Progress</th>
                   <th className="text-left p-2">Employee</th>
                   <th className="text-left p-2">Quantity</th>
                   <th className="text-left p-2">Time</th>
                   <th className="text-left p-2">Date</th>
-                  <th className="text-left p-2">Status</th>
                   <th className="text-left p-2">Quality</th>
+                  <th className="text-left p-2">Status</th>
                   <th className="text-left p-2">Actions</th>
                 </tr>
               </thead>
@@ -190,22 +297,44 @@ const ProductionManagement = () => {
                       </div>
                     </td>
                     <td className="p-2">{production.programme}</td>
+                    <td className="p-2">
+                    <div className="text-right">
+                    <div className="w-20 bg-gray-200 rounded-full h-2">
+                      <div 
+                        className="bg-blue-600 h-2 rounded-full" 
+                        style={{ width: `${production.progress}%` }}
+                      ></div>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">{production.progress}%</p>
+                  </div>
+                    </td>
                     <td className="p-2">{production.employeeName}</td>
                     <td className="p-2">{production.quantity} {production.unit}</td>
                     <td className="p-2">{production.startTime} - {production.endTime}</td>
                     <td className="p-2">{production.date}</td>
+                    <td className="p-2">{production.quality}</td>
                     <td className="p-2">
                       <Badge className={getStatusColor(production.status)}>
                         {production.status}
                       </Badge>
                     </td>
-                    <td className="p-2">{production.quality}</td>
                     <td className="p-2">
                       <div className="flex space-x-2">
-                        <Button size="sm" variant="outline">Edit</Button>
-                        <Button size="sm" variant="outline">View</Button>
+                        <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEditProduction(production);
+                      }}
+                    >
+                      <Edit className="w-4 h-4" />
+                    </Button>
+                        <Button size="sm" variant="outline" onClick={() => handleViewProduction(production)}>View</Button>
+                    
                       </div>
                     </td>
+                   
                   </tr>
                 ))}
               </tbody>
@@ -213,6 +342,26 @@ const ProductionManagement = () => {
           </div>
         </CardContent>
       </Card>
+
+
+      <AddProductionModal 
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onAdd={handleAddProduction}
+      />
+      
+      <EditProductionModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onEdit={handleUpdateProduction}
+        production={selectedProduction}
+      />
+      
+      <ViewProductionModal 
+        isOpen={isViewModalOpen}
+        onClose={() => setIsViewModalOpen(false)}
+        production={selectedProduction}
+      />
     </div>
   );
 };

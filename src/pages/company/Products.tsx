@@ -20,58 +20,58 @@ import {
 } from "lucide-react";
 import QRCodeModal from "@/components/modals/QRCodeModal";
 import { toast } from "sonner";
+import EditProductModal from "@/components/modals/EditProductModal";
+import ViewProductModal from "@/components/modals/ViewProductModal";
 
 const Products = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isQRModalOpen, setIsQRModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
 
-  const [products] = useState([
+  const [products, setProducts] = useState([
     {
-      id: "PRD-001",
-      name: "Premium Cotton T-Shirt",
-      description: "High-quality cotton t-shirt with premium finish",
-      category: "Apparel",
+      id: 'PRD-001',
+      name: 'Premium Cotton T-Shirt',
+      description: 'High-quality cotton t-shirt with premium finish',
+      category: 'Apparel',
       price: 29.99,
       stock: 150,
-      status: "Active",
-      image:
-        "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400",
+      status: 'Active',
+      image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400'
     },
     {
-      id: "PRD-002",
-      name: "Silk Scarf Collection",
-      description: "Elegant silk scarves in various colors and patterns",
-      category: "Accessories",
-      price: 45.0,
+      id: 'PRD-002',
+      name: 'Silk Scarf Collection',
+      description: 'Elegant silk scarves in various colors and patterns',
+      category: 'Accessories',
+      price: 45.00,
       stock: 75,
-      status: "Active",
-      image:
-        "https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?w=400",
+      status: 'Active',
+      image: 'https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?w=400'
     },
     {
-      id: "PRD-003",
-      name: "Denim Jacket",
-      description: "Classic denim jacket with modern fit",
-      category: "Outerwear",
+      id: 'PRD-003',
+      name: 'Denim Jacket',
+      description: 'Classic denim jacket with modern fit',
+      category: 'Outerwear',
       price: 79.99,
       stock: 25,
-      status: "Low Stock",
-      image: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400",
+      status: 'Low Stock',
+      image: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400'
     },
     {
-      id: "PRD-004",
-      name: "Wool Sweater",
-      description: "Warm and comfortable wool sweater",
-      category: "Knitwear",
+      id: 'PRD-004',
+      name: 'Wool Sweater',
+      description: 'Warm and comfortable wool sweater',
+      category: 'Knitwear',
       price: 89.99,
       stock: 0,
-      status: "Out of Stock",
-      image:
-        "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=400",
-    },
+      status: 'Out of Stock',
+      image: 'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=400'
+    }
   ]);
-
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Active":
@@ -90,9 +90,21 @@ const Products = () => {
     setIsQRModalOpen(true);
   };
 
-  const handleEditProduct = (productId: string) => {
-    console.log("Edit product:", productId);
-    toast.info("Edit product functionality - coming soon");
+  const handleEditProduct = (product: any) => {
+    setSelectedProduct(product);
+    setIsEditModalOpen(true);  
+  };
+
+
+  const handleUpdateProduct = (updatedProduct: any) => {
+    setProducts(products.map(product => 
+      product.id === updatedProduct.id ? updatedProduct : product
+    ));
+  };
+
+  const handleViewProduct = (product: any) => {
+    setSelectedProduct(product);  
+    setIsViewModalOpen(true);
   };
 
   const handleDeleteProduct = (productId: string) => {
@@ -200,7 +212,8 @@ const Products = () => {
                 {filteredProducts.map((product) => (
                   <Card
                     key={product.id}
-                    className="w-[180px] h-auto border rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                    className="w-[180px] h-auto border rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                    onClick={() => handleViewProduct(product)}
                   >
                     <CardContent className="p-2 flex flex-col justify-between h-full">
                       {/* Image */}
@@ -257,14 +270,25 @@ const Products = () => {
                             <QrCode className="w-3 h-3 mr-1" />
                             QR
                           </Button>
-                          <Button
+                          {/* <Button
                             size="sm"
                             variant="outline"
                             className="text-[10px] h-7 px-2"
                             onClick={() => handleEditProduct(product.id)}
                           >
                             <Edit className="w-3 h-3" />
-                          </Button>
+                          </Button> */}
+                           <Button 
+                        size="sm" 
+                        variant="outline"
+                        className="text-[10px] h-7 px-2"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEditProduct(product);
+                        }}
+                      >
+                        <Edit className="w-3 h-3" />
+                      </Button>
                           <Button
                             size="sm"
                             variant="outline"
@@ -289,6 +313,20 @@ const Products = () => {
         onClose={() => setIsQRModalOpen(false)}
         product={selectedProduct || { id: "", name: "", image: "" }}
       />
+
+      <EditProductModal 
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onEdit={handleUpdateProduct}
+        product={selectedProduct}
+      />
+      
+      <ViewProductModal 
+        isOpen={isViewModalOpen}
+        onClose={() => setIsViewModalOpen(false)}
+        product={selectedProduct}
+      />
+
     </div>
   );
 };

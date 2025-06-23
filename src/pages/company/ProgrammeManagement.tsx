@@ -11,66 +11,95 @@ import {
   Clock,
   Settings,
   Play,
-  Pause
+  Pause,
+  Filter
 } from 'lucide-react';
+import AddProgrammeModal from '@/components/modals/AddProgrammeModal';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@radix-ui/react-select';
 
 const ProgrammeManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('All');
+  const [machineFilter, setMachineFilter] = useState('All');
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  const programmes = [
+  const [programmes, setProgrammes] = useState([
     {
-      id: 1,
-      name: 'Cotton Fabric Pattern A',
+      id: 'PROG-001',
+      name: 'Cotton Weaving Program',
+      machine: 'Loom-A1',
+      status: 'Running',
+      startDate: '2024-01-20',
+      endDate: '2024-01-25',
+      progress: 65,
+      priority: 'High',
       description: 'Basic cotton weaving pattern for shirts',
       category: 'Weaving',
       estimatedTime: '8 hours',
       difficulty: 'Medium',
-      status: 'Active',
       assignedMachine: 'Weaving Machine 1',
       createdDate: '2024-01-10',
       lastUsed: '2024-01-20',
-      completions: 25
+      completions: 25,
     },
     {
-      id: 2,
-      name: 'Blue Dye Process',
-      description: 'Standard blue dyeing procedure',
-      category: 'Dyeing',
-      estimatedTime: '6 hours',
-      difficulty: 'Easy',
-      status: 'Idle',
-      assignedMachine: 'None',
-      createdDate: '2024-01-08',
-      lastUsed: '2024-01-18',
-      completions: 18
-    },
-    {
-      id: 3,
-      name: 'Shirt Pattern Cut',
-      description: 'Precision cutting pattern for dress shirts',
-      category: 'Cutting',
-      estimatedTime: '4 hours',
-      difficulty: 'Hard',
-      status: 'Active',
-      assignedMachine: 'Cutting Machine 1',
-      createdDate: '2024-01-05',
-      lastUsed: '2024-01-19',
-      completions: 32
-    },
-    {
-      id: 4,
-      name: 'Premium Silk Weave',
-      description: 'Complex silk weaving pattern',
+      id: 'PROG-002',
+      name: 'Silk Pattern Design',
+      machine: 'Loom-B2',
+      status: 'Push',
+      startDate: '2024-01-22',
+      endDate: '2024-01-28',
+      progress: 30,
+      priority: 'Medium',
+      description: 'Basic cotton weaving pattern for shirts',
       category: 'Weaving',
-      estimatedTime: '12 hours',
-      difficulty: 'Hard',
-      status: 'Draft',
-      assignedMachine: 'None',
-      createdDate: '2024-01-15',
-      lastUsed: 'Never',
-      completions: 0
+      estimatedTime: '8 hours',
+      difficulty: 'Medium',
+      assignedMachine: 'Weaving Machine 1',
+      createdDate: '2024-01-10',
+      lastUsed: '2024-01-20',
+      completions: 25,
+    },
+    {
+      id: 'PROG-003',
+      name: 'Denim Production',
+      machine: 'Loom-C3',
+      status: 'Completed',
+      startDate: '2024-01-15',
+      endDate: '2024-01-20',
+      progress: 100,
+      priority: 'Low',
+      description: 'Basic cotton weaving pattern for shirts',
+      category: 'Weaving',
+      estimatedTime: '8 hours',
+      difficulty: 'Medium',
+      assignedMachine: 'Weaving Machine 1',
+      createdDate: '2024-01-10',
+      lastUsed: '2024-01-20',
+      completions: 25,
+    },
+    {
+      id: 'PROG-004',
+      name: 'Premium Fabric Series',
+      machine: 'Loom-A1',
+      status: 'Running',
+      startDate: '2024-01-18',
+      endDate: '2024-01-24',
+      progress: 80,
+      priority: 'High',
+      description: 'Basic cotton weaving pattern for shirts',
+      category: 'Weaving',
+      estimatedTime: '8 hours',
+      difficulty: 'Medium',
+      assignedMachine: 'Weaving Machine 1',
+      createdDate: '2024-01-10',
+      lastUsed: '2024-01-20',
+      completions: 25,
     }
-  ];
+  ]);
+
+  const machines = ['All', 'Loom-A1', 'Loom-B2', 'Loom-C3', 'Loom-D4'];
+  const statuses = ['All', 'Running', 'Push', 'Completed'];
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -90,6 +119,11 @@ const ProgrammeManagement = () => {
     }
   };
 
+  const handleAddProgramme = (newProgramme) => {
+    setProgrammes([...programmes, newProgramme]);
+  };
+
+
   const filteredProgrammes = programmes.filter(programme =>
     programme.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     programme.category.toLowerCase().includes(searchTerm.toLowerCase())
@@ -102,9 +136,9 @@ const ProgrammeManagement = () => {
           <h1 className="text-3xl font-bold text-gray-900">Programme Management</h1>
           <p className="text-gray-600">Create and manage production programmes</p>
         </div>
-        <Button>
+        <Button onClick={() => setIsAddModalOpen(true)}>
           <Plus className="w-4 h-4 mr-2" />
-          Create Programme
+          New Programme
         </Button>
       </div>
 
@@ -155,17 +189,96 @@ const ProgrammeManagement = () => {
       </div>
 
       <Card>
-        <CardHeader>
+        {/* <CardHeader>
           <CardTitle>Programme List</CardTitle>
           <CardDescription>View and manage all production programmes</CardDescription>
-          <div className="flex items-center space-x-2">
-            <Search className="w-4 h-4" />
-            <Input
-              placeholder="Search programmes..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="max-w-sm"
-            />
+          <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex items-center space-x-2">
+                <Search className="w-4 h-4" />
+                <Input
+                  placeholder="Search programmes..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="max-w-sm"
+                  />
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Filter className="w-4 h-4" />
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger className="w-40">
+                    <SelectValue placeholder="Filter by status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {statuses.map((status) => (
+                      <SelectItem key={status} value={status}>
+                        {status === 'All' ? 'All Status' : status}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Settings className="w-4 h-4" />
+                <Select value={machineFilter} onValueChange={setMachineFilter}>
+                  <SelectTrigger className="w-40">
+                    <SelectValue placeholder="Filter by machine" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {machines.map((machine) => (
+                      <SelectItem key={machine} value={machine}>
+                        {machine === 'All' ? 'All Machines' : machine}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+          </div>
+        </CardHeader> */}
+        <CardHeader>
+          <CardTitle>Programmes</CardTitle>
+          <CardDescription>View and manage all programmes</CardDescription>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex items-center space-x-2 flex-1">
+              <Search className="w-4 h-4" />
+              <Input
+                placeholder="Search programmes..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="max-w-sm"
+              />
+            </div>
+            <div className="flex items-center space-x-2">
+              <Filter className="w-4 h-4" />
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-40">
+                  <SelectValue placeholder="Filter by status" />
+                </SelectTrigger>
+                <SelectContent>
+                  {statuses.map((status) => (
+                    <SelectItem key={status} value={status}>
+                      {status === 'All' ? 'All Status' : status}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Settings className="w-4 h-4" />
+              <Select value={machineFilter} onValueChange={setMachineFilter}>
+                <SelectTrigger className="w-40">
+                  <SelectValue placeholder="Filter by machine" />
+                </SelectTrigger>
+                <SelectContent>
+                  {machines.map((machine) => (
+                    <SelectItem key={machine} value={machine}>
+                      {machine === 'All' ? 'All Machines' : machine}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
@@ -228,6 +341,13 @@ const ProgrammeManagement = () => {
           </div>
         </CardContent>
       </Card>
+
+
+      <AddProgrammeModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onAdd={handleAddProgramme}
+      />
     </div>
   );
 };
