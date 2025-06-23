@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,6 +15,7 @@ import {
 import QRCodeModal from '@/components/modals/QRCodeModal';
 import EditProductModal from '@/components/modals/EditProductModal';
 import ViewProductModal from '@/components/modals/ViewProductModal';
+import AddProductModal from '@/components/modals/AddProductModal';
 import { toast } from 'sonner';
 
 const Products = () => {
@@ -23,6 +23,7 @@ const Products = () => {
   const [isQRModalOpen, setIsQRModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   const [products, setProducts] = useState([
@@ -103,6 +104,10 @@ const Products = () => {
     toast.info('Delete product functionality - coming soon');
   };
 
+  const handleAddProduct = (newProduct: any) => {
+    setProducts([...products, newProduct]);
+  };
+
   const filteredProducts = products.filter(product =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     product.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -116,7 +121,7 @@ const Products = () => {
           <h1 className="text-3xl font-bold text-gray-900">Products</h1>
           <p className="text-gray-600">Manage your product catalog</p>
         </div>
-        <Button>
+        <Button onClick={() => setIsAddModalOpen(true)}>
           <Plus className="w-4 h-4 mr-2" />
           Create Product
         </Button>
@@ -272,6 +277,12 @@ const Products = () => {
         isOpen={isViewModalOpen}
         onClose={() => setIsViewModalOpen(false)}
         product={selectedProduct}
+      />
+
+      <AddProductModal 
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onAdd={handleAddProduct}
       />
     </div>
   );

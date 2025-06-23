@@ -1,9 +1,11 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { 
   ArrowLeft, 
   Calendar, 
@@ -13,15 +15,20 @@ import {
   CheckCircle,
   Clock,
   Target,
-  Activity
+  Activity,
+  Edit,
+  Save,
+  X
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 const ProgrammeDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [isEditing, setIsEditing] = useState(false);
 
   // Mock data - in real app this would come from API
-  const programme = {
+  const [programme, setProgramme] = useState({
     id: 'PROG-001',
     name: 'Cotton Weaving Program',
     machine: 'Loom-A1',
@@ -48,6 +55,38 @@ const ProgrammeDetails = () => {
       { name: 'Final Quality Check', date: '2024-01-24', status: 'Pending' },
       { name: 'Production Complete', date: '2024-01-25', status: 'Pending' }
     ]
+  });
+
+  const [editFormData, setEditFormData] = useState(programme);
+
+  const handleEdit = () => {
+    setIsEditing(true);
+    setEditFormData(programme);
+  };
+
+  const handleSave = () => {
+    setProgramme(editFormData);
+    setIsEditing(false);
+    toast.success('Programme updated successfully');
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setEditFormData(programme);
+  };
+
+  const handleStatusChange = (newStatus: string) => {
+    const updatedProgramme = { ...programme, status: newStatus };
+    setProgramme(updatedProgramme);
+    setEditFormData(updatedProgramme);
+    toast.success(`Programme status changed to ${newStatus}`);
+  };
+
+  const updateProgress = (newProgress: number) => {
+    const updatedProgramme = { ...programme, progress: newProgress };
+    setProgramme(updatedProgramme);
+    setEditFormData(updatedProgramme);
+    toast.success(`Progress updated to ${newProgress}%`);
   };
 
   const getStatusColor = (status: string) => {
@@ -104,6 +143,52 @@ const ProgrammeDetails = () => {
           </div>
         </div>
         <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => handleStatusChange('Running')}
+              disabled={programme.status === 'Running'}
+            >
+              <Play className="w-4 h-4 mr-1" />
+              Start
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => handleStatusChange('Push')}
+              disabled={programme.status === 'Push'}
+            >
+              <Pause className="w-4 h-4 mr-1" />
+              Pause
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => handleStatusChange('Completed')}
+              disabled={programme.status === 'Completed'}
+            >
+              <CheckCircle className="w-4 h-4 mr-1" />
+              Complete
+            </Button>
+          </div>
+          {!isEditing ? (
+            <Button onClick={handleEdit}>
+              <Edit className="w-4 h-4 mr-2" />
+              Edit
+            </Button>
+          ) : (
+            <div className="flex space-x-2">
+              <Button onClick={handleSave}>
+                <Save className="w-4 h-4 mr-2" />
+                Save
+              </Button>
+              <Button variant="outline" onClick={handleCancel}>
+                <X className="w-4 h-4 mr-2" />
+                Cancel
+              </Button>
+            </div>
+          )}
           <Badge className={getStatusColor(programme.status)}>
             {getStatusIcon(programme.status)}
             <span className="ml-1">{programme.status}</span>
@@ -127,6 +212,14 @@ const ProgrammeDetails = () => {
                 className="bg-blue-600 h-2 rounded-full" 
                 style={{ width: `${programme.progress}%` }}
               ></div>
+            </div>
+            <div className="flex space-x-1 mt-2">
+              <Button size="sm" variant="outline" onClick={() => updateProgress(Math.max(0, programme.progress - 10))}>
+                -10%
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => updateProgress(Math.min(100, programme.progress + 10))}>
+                +10%
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -172,30 +265,86 @@ const ProgrammeDetails = () => {
             <CardDescription>Basic details and specifications</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium text-gray-500">Machine</label>
-                <p className="text-sm font-semibold">{programme.machine}</p>
+            {isEditing ? (
+              <div className="space-y-4">
+                <div>
+                  <Label>Programme Name</Label>
+                  <Input 
+                    value={editFormData.name}
+                    onChange={(e) => setEditFormData({...editFormData, name: e.target.value})}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Machine</Label>
+                    <Input 
+                      value={editFormData.machine}
+                      onChange={(e) => setEditFormData({...editFormData, machine: e.target.value})}
+                    />
+                  </div>
+                  <div>
+                    <Label>Operator</Label>
+                    <Input 
+                      value={editFormData.operator}
+                      onChange={(e) => setEditFormData({...editFormData, operator: e.target.value})}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Start Date</Label>
+                    <Input 
+                      type="date"
+                      value={editFormData.startDate}
+                      onChange={(e) => setEditFormData({...editFormData, startDate: e.target.value})}
+                    />
+                  </div>
+                  <div>
+                    <Label>End Date</Label>
+                    <Input 
+                      type="date"
+                      value={editFormData.endDate}
+                      onChange={(e) => setEditFormData({...editFormData, endDate: e.target.value})}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label>Description</Label>
+                  <Textarea 
+                    value={editFormData.description}
+                    onChange={(e) => setEditFormData({...editFormData, description: e.target.value})}
+                    rows={3}
+                  />
+                </div>
               </div>
-              <div>
-                <label className="text-sm font-medium text-gray-500">Operator</label>
-                <p className="text-sm font-semibold">{programme.operator}</p>
+            ) : (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Machine</label>
+                    <p className="text-sm font-semibold">{programme.machine}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Operator</label>
+                    <p className="text-sm font-semibold">{programme.operator}</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Start Date</label>
+                    <p className="text-sm font-semibold">{programme.startDate}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">End Date</label>
+                    <p className="text-sm font-semibold">{programme.endDate}</p>
+                  </div>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-500">Description</label>
+                  <p className="text-sm">{programme.description}</p>
+                </div>
               </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium text-gray-500">Start Date</label>
-                <p className="text-sm font-semibold">{programme.startDate}</p>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-500">End Date</label>
-                <p className="text-sm font-semibold">{programme.endDate}</p>
-              </div>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-500">Description</label>
-              <p className="text-sm">{programme.description}</p>
-            </div>
+            )}
           </CardContent>
         </Card>
 
