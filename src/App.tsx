@@ -42,6 +42,8 @@ import NotFound from "./pages/NotFound";
 import EmployeeDetails from "./pages/company/EmployeeDetails";
 import Products from "./pages/company/Products";
 import DailyConsumption from "./pages/company/DailyConsumption";
+import CompanySettings from "./pages/company/CompanySettings";
+import CompanyGeneralSetting from "./pages/company/CompanyGeneralSetting";
 
 const queryClient = new QueryClient();
 
@@ -86,6 +88,9 @@ const App = () => (
               <Route path="machines" element={<MachineManagement />} />
               <Route path="programmes" element={<ProgrammeManagement />} />
               <Route path="activity" element={<ActivityHistory />} />
+            <Route path="settings" element={<CompanySettings />} />
+            <Route path="settings/general" element={<CompanyGeneralSetting />} />
+            <Route path="settings/holidays" element={<CompanySettings />} />
             </Route>
             
             {/* Employee Routes */}

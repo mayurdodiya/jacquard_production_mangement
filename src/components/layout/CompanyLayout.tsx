@@ -70,7 +70,7 @@ const CompanyLayout = () => {
   ];
 
   const settingsItems = [
-    { label: "Calendar Settings", path: "/company/settings/calendar" },
+    { label: "General Settings", path: "/company/settings/general" },
     { label: "Holiday Management", path: "/company/settings/holidays" },
   ];
 
