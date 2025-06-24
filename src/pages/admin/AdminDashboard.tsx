@@ -108,7 +108,7 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 min-h-full">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
         <p className="text-gray-600 mt-2">Comprehensive system overview and management</p>
@@ -287,7 +287,7 @@ const AdminDashboard = () => {
       </Card>
 
       {/* Additional Content for Scroll Demo */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <Card className="shadow-sm bg-white">
           <CardHeader>
             <CardTitle className="text-gray-900">Performance Metrics</CardTitle>

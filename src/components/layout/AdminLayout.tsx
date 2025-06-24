@@ -33,7 +33,7 @@ const AdminLayout = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="h-screen flex bg-gray-50">
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div 
@@ -45,7 +45,7 @@ const AdminLayout = () => {
       {/* Fixed Sidebar */}
       <aside className={`${
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      } fixed lg:relative lg:translate-x-0 z-50 w-64 h-screen bg-white shadow-lg flex flex-col transition-transform duration-300 ease-in-out border-r border-gray-200`}>
+      } fixed lg:relative lg:translate-x-0 z-50 w-64 h-full bg-white shadow-lg flex flex-col transition-transform duration-300 ease-in-out border-r border-gray-200 flex-shrink-0`}>
         
         {/* Sidebar Header */}
         <div className="flex-shrink-0 p-6 border-b border-gray-200">
@@ -105,8 +105,8 @@ const AdminLayout = () => {
         </div>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col min-h-0 lg:ml-0">
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col h-full min-w-0">
         {/* Mobile Header */}
         <div className="lg:hidden bg-white shadow-sm border-b p-4 flex-shrink-0">
           <div className="flex items-center justify-between">
@@ -120,13 +120,13 @@ const AdminLayout = () => {
           </div>
         </div>
 
-        {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-y-auto bg-gray-50">
+        {/* Scrollable Content Container */}
+        <main className="flex-1 overflow-y-auto bg-gray-50">
           <div className="p-6">
             <Outlet />
           </div>
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 };
