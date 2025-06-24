@@ -17,7 +17,7 @@ const AdminLayout = () => {
   const { logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -33,19 +33,11 @@ const AdminLayout = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="min-h-screen flex bg-slate-50 w-full relative">
-      {/* Background Image */}
-      <div 
-        className="fixed inset-0 bg-cover bg-center bg-no-repeat opacity-10 pointer-events-none"
-        style={{
-          backgroundImage: 'url("https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80")'
-        }}
-      />
-
+    <div className="h-screen flex bg-gray-50">
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -53,56 +45,59 @@ const AdminLayout = () => {
       {/* Fixed Sidebar */}
       <aside className={`${
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      } fixed lg:relative lg:translate-x-0 z-50 w-72 h-screen bg-gradient-to-b from-slate-800 to-slate-900 shadow-2xl flex flex-col transition-all duration-300 ease-in-out`}>
+      } fixed lg:relative lg:translate-x-0 z-50 w-64 h-screen bg-white shadow-lg flex flex-col transition-transform duration-300 ease-in-out border-r border-gray-200`}>
         
-        {/* Header */}
-        <div className="p-6 border-b border-slate-700 bg-gradient-to-r from-blue-600 to-indigo-700 text-white flex-shrink-0">
+        {/* Sidebar Header */}
+        <div className="flex-shrink-0 p-6 border-b border-gray-200">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-bold">Admin Panel</h1>
-              <p className="text-blue-100 text-sm mt-1">System Management</p>
+              <h1 className="text-xl font-bold text-gray-900">Admin Panel</h1>
+              <p className="text-sm text-gray-500 mt-1">System Management</p>
             </div>
             <button
               onClick={() => setSidebarOpen(false)}
-              className="lg:hidden text-white hover:bg-white/20 p-2 rounded-lg transition-colors"
+              className="lg:hidden text-gray-500 hover:text-gray-700 p-2 rounded-lg transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
         </div>
 
-        {/* Navigation - Scrollable */}
-        <nav className="flex-1 py-6 px-4 space-y-2 bg-gradient-to-b from-slate-800 to-slate-900 overflow-y-auto sidebar-scrollbar">
-          {menuItems.map((item, index) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`group flex items-center px-4 py-3 rounded-xl transition-all duration-300 ${
-                isActive(item.path)
-                  ? 'bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-lg'
-                  : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
-              }`}
-            >
-              <div className={`p-2 rounded-lg mr-3 transition-all duration-300 ${
-                isActive(item.path) 
-                  ? 'bg-white/20' 
-                  : 'bg-slate-700/50 group-hover:bg-slate-600/50'
-              }`}>
-                <item.icon className="w-5 h-5" />
-              </div>
-              <span className="font-medium">{item.label}</span>
-              {isActive(item.path) && (
-                <div className="ml-auto w-2 h-2 bg-white rounded-full"></div>
-              )}
-            </Link>
-          ))}
+        {/* Sidebar Navigation - Scrollable */}
+        <nav className="flex-1 p-4 overflow-y-auto">
+          <div className="space-y-2">
+            {menuItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                onClick={() => setSidebarOpen(false)}
+                className={`group flex items-center px-3 py-2.5 rounded-lg transition-all duration-200 ${
+                  isActive(item.path)
+                    ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                    : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                }`}
+              >
+                <div className={`p-2 rounded-md mr-3 transition-colors ${
+                  isActive(item.path) 
+                    ? 'bg-blue-100 text-blue-700' 
+                    : 'bg-gray-100 text-gray-600 group-hover:bg-gray-200'
+                }`}>
+                  <item.icon className="w-4 h-4" />
+                </div>
+                <span className="font-medium">{item.label}</span>
+                {isActive(item.path) && (
+                  <div className="ml-auto w-2 h-2 bg-blue-600 rounded-full"></div>
+                )}
+              </Link>
+            ))}
+          </div>
         </nav>
 
-        {/* Footer */}
-        <div className="p-4 border-t border-slate-700 bg-gradient-to-b from-slate-800 to-slate-900 flex-shrink-0">
+        {/* Sidebar Footer */}
+        <div className="flex-shrink-0 p-4 border-t border-gray-200">
           <Button 
             onClick={handleLogout} 
-            className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white border-0 shadow-lg"
+            className="w-full bg-red-600 hover:bg-red-700 text-white"
           >
             <LogOut className="w-4 h-4 mr-2" />
             Logout
@@ -111,23 +106,23 @@ const AdminLayout = () => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col min-h-screen lg:ml-0 relative z-10">
+      <main className="flex-1 flex flex-col min-h-0 lg:ml-0">
         {/* Mobile Header */}
-        <div className="lg:hidden bg-white/95 backdrop-blur-sm shadow-sm border-b p-4 flex-shrink-0">
+        <div className="lg:hidden bg-white shadow-sm border-b p-4 flex-shrink-0">
           <div className="flex items-center justify-between">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="p-2 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-lg"
+              className="p-2 rounded-lg bg-blue-600 text-white shadow-md"
             >
               <Menu className="w-5 h-5" />
             </button>
-            <h1 className="text-lg font-semibold text-slate-800">Admin Panel</h1>
+            <h1 className="text-lg font-semibold text-gray-900">Admin Panel</h1>
           </div>
         </div>
 
-        {/* Content Area - Scrollable */}
-        <div className="flex-1 overflow-y-auto bg-gradient-to-br from-blue-50/80 to-indigo-50/80 backdrop-blur-sm custom-scrollbar">
-          <div className="p-6 max-w-7xl mx-auto">
+        {/* Scrollable Content Area */}
+        <div className="flex-1 overflow-y-auto bg-gray-50">
+          <div className="p-6">
             <Outlet />
           </div>
         </div>
