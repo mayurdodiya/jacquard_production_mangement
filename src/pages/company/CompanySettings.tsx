@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -27,6 +28,9 @@ import { format } from 'date-fns';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart as RechartsPieChart, Cell, Pie } from 'recharts';
 
 const CompanySettings = () => {
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState('company');
+  
   const [isHolidayModalOpen, setIsHolidayModalOpen] = useState(false);
   const [selectedYear, setSelectedYear] = useState('2024');
   const [selectedMonth, setSelectedMonth] = useState('All');
@@ -190,6 +194,15 @@ const CompanySettings = () => {
     return holidays.some(holiday => holiday.date === dateString);
   };
 
+  // Auto-navigate to holidays tab if accessed via holiday management route
+  useEffect(() => {
+    if (location.pathname.includes('/settings/holidays')) {
+      setActiveTab('holidays');
+    } else if (location.pathname.includes('/settings/calendar')) {
+      setActiveTab('holidays');
+    }
+  }, [location.pathname]);
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -199,7 +212,7 @@ const CompanySettings = () => {
         </div>
       </div>
 
-      <Tabs defaultValue="company" className="space-y-6">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="company" className="flex items-center space-x-2">
             <Building className="w-4 h-4" />

@@ -29,6 +29,7 @@ import ProductionManagement from './pages/company/ProductionManagement';
 import MachineManagement from './pages/company/MachineManagement';
 import ProgrammeManagement from './pages/company/ProgrammeManagement';
 import ActivityHistory from './pages/company/ActivityHistory';
+import CompanySettings from './pages/company/CompanySettings';
 
 // Employee Pages
 import EmployeeDashboard from './pages/employee/EmployeeDashboard';
@@ -83,6 +84,9 @@ function App() {
             <Route path="machines" element={<MachineManagement />} />
             <Route path="programmes" element={<ProgrammeManagement />} />
             <Route path="activity" element={<ActivityHistory />} />
+            <Route path="settings" element={<CompanySettings />} />
+            <Route path="settings/calendar" element={<CompanySettings />} />
+            <Route path="settings/holidays" element={<CompanySettings />} />
           </Route>
 
           {/* Employee Routes */}
