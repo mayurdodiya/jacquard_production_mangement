@@ -8,22 +8,30 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Calendar } from '@/components/ui/calendar';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { 
   Settings, 
   Plus, 
   Edit,
   Trash2,
-  Calendar,
+  Calendar as CalendarIcon,
   Building,
   User,
-  Bell
+  Bell,
+  BarChart3,
+  PieChart
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { format } from 'date-fns';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart as RechartsPieChart, Cell } from 'recharts';
 
 const CompanySettings = () => {
   const [isHolidayModalOpen, setIsHolidayModalOpen] = useState(false);
   const [selectedYear, setSelectedYear] = useState('2024');
   const [selectedMonth, setSelectedMonth] = useState('All');
+  const [selectedDate, setSelectedDate] = useState<Date>();
+  const [viewMode, setViewMode] = useState('cards'); // 'cards', 'calendar', 'chart'
   const [holidayFormData, setHolidayFormData] = useState({
     name: '',
     date: '',
@@ -88,7 +96,7 @@ const CompanySettings = () => {
   };
 
   const getTypeColor = (type: string) => {
-    return type === 'National' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800';
+    return type === 'National' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800';
   };
 
   const getFilteredHolidays = () => {
@@ -113,15 +121,73 @@ const CompanySettings = () => {
              holidayDate.getMonth() === monthIndex - 1;
     });
     
-    const workingDays = daysInMonth - monthHolidays.length;
-    return { total: daysInMonth, holidays: monthHolidays.length, working: workingDays };
+    // Calculate weekends
+    const weekends = [];
+    for (let day = 1; day <= daysInMonth; day++) {
+      const date = new Date(parseInt(selectedYear), monthIndex - 1, day);
+      if (date.getDay() === 0 || date.getDay() === 6) {
+        weekends.push(day);
+      }
+    }
+    
+    const workingDays = daysInMonth - monthHolidays.length - weekends.length;
+    return { 
+      total: daysInMonth, 
+      holidays: monthHolidays.length, 
+      working: workingDays,
+      weekends: weekends.length 
+    };
   };
 
   const getYearlyStats = () => {
     const totalDays = 365; // Assuming non-leap year for simplicity
     const yearHolidays = holidays.filter(holiday => holiday.date.includes(selectedYear));
-    const workingDays = totalDays - yearHolidays.length;
-    return { total: totalDays, holidays: yearHolidays.length, working: workingDays };
+    
+    // Calculate total weekends in year
+    let totalWeekends = 0;
+    for (let month = 0; month < 12; month++) {
+      const daysInMonth = new Date(parseInt(selectedYear), month + 1, 0).getDate();
+      for (let day = 1; day <= daysInMonth; day++) {
+        const date = new Date(parseInt(selectedYear), month, day);
+        if (date.getDay() === 0 || date.getDay() === 6) {
+          totalWeekends++;
+        }
+      }
+    }
+    
+    const workingDays = totalDays - yearHolidays.length - totalWeekends;
+    return { 
+      total: totalDays, 
+      holidays: yearHolidays.length, 
+      working: workingDays,
+      weekends: totalWeekends 
+    };
+  };
+
+  const getChartData = () => {
+    return months.slice(1).map((month, index) => {
+      const stats = getMonthlyStats(index + 1);
+      return {
+        month: month.substring(0, 3),
+        working: stats.working,
+        holidays: stats.holidays,
+        weekends: stats.weekends
+      };
+    });
+  };
+
+  const getPieChartData = () => {
+    const yearStats = getYearlyStats();
+    return [
+      { name: 'Working Days', value: yearStats.working, color: '#10B981' },
+      { name: 'Holidays', value: yearStats.holidays, color: '#EF4444' },
+      { name: 'Weekends', value: yearStats.weekends, color: '#6B7280' }
+    ];
+  };
+
+  const isHoliday = (date: Date) => {
+    const dateString = format(date, 'yyyy-MM-dd');
+    return holidays.some(holiday => holiday.date === dateString);
   };
 
   return (
@@ -144,7 +210,7 @@ const CompanySettings = () => {
             <span>Users</span>
           </TabsTrigger>
           <TabsTrigger value="holidays" className="flex items-center space-x-2">
-            <Calendar className="w-4 h-4" />
+            <CalendarIcon className="w-4 h-4" />
             <span>Holidays</span>
           </TabsTrigger>
           <TabsTrigger value="notifications" className="flex items-center space-x-2">
@@ -206,15 +272,20 @@ const CompanySettings = () => {
             <CardHeader>
               <div className="flex justify-between items-center">
                 <div>
-                  <CardTitle>Holiday Management</CardTitle>
+                  <CardTitle className="flex items-center space-x-2">
+                    <CalendarIcon className="w-5 h-5" />
+                    <span>Holiday Management</span>
+                  </CardTitle>
                   <CardDescription>Manage company holidays and track working days</CardDescription>
                 </div>
-                <Button onClick={() => setIsHolidayModalOpen(true)}>
+                <Button onClick={() => setIsHolidayModalOpen(true)} className="bg-gradient-to-r from-blue-600 to-indigo-700">
                   <Plus className="w-4 h-4 mr-2" />
                   Add Holiday
                 </Button>
               </div>
-              <div className="flex gap-4 mt-4">
+              
+              {/* Controls */}
+              <div className="flex flex-wrap gap-4 mt-6">
                 <div>
                   <Label>Year</Label>
                   <Select value={selectedYear} onValueChange={setSelectedYear}>
@@ -241,87 +312,305 @@ const CompanySettings = () => {
                     </SelectContent>
                   </Select>
                 </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {/* Yearly Summary */}
-              <div className="mb-6 p-4 bg-blue-50 rounded-lg">
-                <h3 className="font-medium text-blue-900 mb-3">Year {selectedYear} Summary</h3>
-                <div className="grid grid-cols-3 gap-4 text-sm">
-                  <div>
-                    <span className="text-blue-700">Total Days:</span>
-                    <span className="font-medium ml-2">{getYearlyStats().total}</span>
-                  </div>
-                  <div>
-                    <span className="text-blue-700">Holidays:</span>
-                    <span className="font-medium ml-2">{getYearlyStats().holidays}</span>
-                  </div>
-                  <div>
-                    <span className="text-blue-700">Working Days:</span>
-                    <span className="font-medium ml-2">{getYearlyStats().working}</span>
-                  </div>
+                <div>
+                  <Label>View Mode</Label>
+                  <Select value={viewMode} onValueChange={setViewMode}>
+                    <SelectTrigger className="w-32">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="cards">Cards</SelectItem>
+                      <SelectItem value="calendar">Calendar</SelectItem>
+                      <SelectItem value="chart">Charts</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
-
-              {/* Monthly Statistics */}
-              {selectedMonth === 'All' && (
-                <div className="mb-6">
-                  <h3 className="font-medium text-gray-900 mb-3">Monthly Statistics for {selectedYear}</h3>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {months.slice(1).map((month, index) => {
-                      const stats = getMonthlyStats(index + 1);
-                      return (
-                        <Card key={month} className="p-3">
-                          <h4 className="font-medium text-sm">{month}</h4>
-                          <div className="text-xs text-gray-600 mt-1">
-                            <div>Total: {stats.total} days</div>
-                            <div>Holidays: {stats.holidays} days</div>
-                            <div>Working: {stats.working} days</div>
-                          </div>
-                        </Card>
-                      );
-                    })}
+            </CardHeader>
+            
+            <CardContent className="space-y-6">
+              {/* Yearly Summary */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <Card className="p-4 bg-gradient-to-r from-blue-50 to-blue-100">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-blue-700">Total Days</p>
+                      <p className="text-2xl font-bold text-blue-900">{getYearlyStats().total}</p>
+                    </div>
+                    <CalendarIcon className="w-8 h-8 text-blue-600" />
                   </div>
+                </Card>
+                <Card className="p-4 bg-gradient-to-r from-green-50 to-green-100">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-green-700">Working Days</p>
+                      <p className="text-2xl font-bold text-green-900">{getYearlyStats().working}</p>
+                    </div>
+                    <Building className="w-8 h-8 text-green-600" />
+                  </div>
+                </Card>
+                <Card className="p-4 bg-gradient-to-r from-red-50 to-red-100">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-red-700">Holidays</p>
+                      <p className="text-2xl font-bold text-red-900">{getYearlyStats().holidays}</p>
+                    </div>
+                    <CalendarIcon className="w-8 h-8 text-red-600" />
+                  </div>
+                </Card>
+                <Card className="p-4 bg-gradient-to-r from-gray-50 to-gray-100">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-700">Weekends</p>
+                      <p className="text-2xl font-bold text-gray-900">{getYearlyStats().weekends}</p>
+                    </div>
+                    <CalendarIcon className="w-8 h-8 text-gray-600" />
+                  </div>
+                </Card>
+              </div>
+
+              {/* Content based on view mode */}
+              {viewMode === 'cards' && (
+                <>
+                  {/* Monthly Cards */}
+                  {selectedMonth === 'All' && (
+                    <div>
+                      <h3 className="font-semibold text-lg mb-4">Monthly Overview for {selectedYear}</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                        {months.slice(1).map((month, index) => {
+                          const stats = getMonthlyStats(index + 1);
+                          return (
+                            <Card key={month} className="p-4 hover:shadow-lg transition-shadow">
+                              <h4 className="font-semibold text-lg mb-3">{month}</h4>
+                              <div className="space-y-2">
+                                <div className="flex justify-between">
+                                  <span className="text-sm text-gray-600">Total Days:</span>
+                                  <span className="font-medium">{stats.total}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-sm text-green-600">Working:</span>
+                                  <span className="font-medium text-green-700">{stats.working}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-sm text-red-600">Holidays:</span>
+                                  <span className="font-medium text-red-700">{stats.holidays}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-sm text-gray-600">Weekends:</span>
+                                  <span className="font-medium text-gray-700">{stats.weekends}</span>
+                                </div>
+                              </div>
+                            </Card>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Holiday List */}
+                  <div>
+                    <h3 className="font-semibold text-lg mb-4">
+                      {selectedMonth === 'All' ? `All Holidays in ${selectedYear}` : `${selectedMonth} ${selectedYear} Holidays`}
+                    </h3>
+                    
+                    {selectedMonth === 'All' ? (
+                      <Accordion type="single" collapsible className="space-y-2">
+                        {months.slice(1).map((month, index) => {
+                          const monthHolidays = holidays.filter(holiday => {
+                            const holidayDate = new Date(holiday.date);
+                            return holidayDate.getFullYear() === parseInt(selectedYear) && 
+                                   holidayDate.getMonth() === index;
+                          });
+                          
+                          if (monthHolidays.length === 0) return null;
+                          
+                          return (
+                            <AccordionItem key={month} value={month} className="border rounded-lg px-4">
+                              <AccordionTrigger className="hover:no-underline">
+                                <div className="flex items-center justify-between w-full mr-4">
+                                  <span className="font-medium">{month}</span>
+                                  <Badge variant="outline">{monthHolidays.length} holidays</Badge>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="pt-2">
+                                <div className="space-y-3">
+                                  {monthHolidays.map((holiday) => (
+                                    <div key={holiday.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                      <div className="flex items-center space-x-3">
+                                        <div className="flex items-center justify-center w-8 h-8 bg-blue-100 rounded-lg">
+                                          <CalendarIcon className="w-4 h-4 text-blue-600" />
+                                        </div>
+                                        <div>
+                                          <h4 className="font-medium text-sm">{holiday.name}</h4>
+                                          <p className="text-xs text-gray-600">{format(new Date(holiday.date), 'MMMM d, yyyy')}</p>
+                                          {holiday.description && (
+                                            <p className="text-xs text-gray-500">{holiday.description}</p>
+                                          )}
+                                        </div>
+                                      </div>
+                                      <div className="flex items-center space-x-2">
+                                        <Badge className={getTypeColor(holiday.type)} variant="outline">
+                                          {holiday.type}
+                                        </Badge>
+                                        <Button 
+                                          variant="outline" 
+                                          size="sm"
+                                          onClick={() => handleDeleteHoliday(holiday.id)}
+                                          className="text-red-600 hover:bg-red-50"
+                                        >
+                                          <Trash2 className="w-3 h-3" />
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </AccordionContent>
+                            </AccordionItem>
+                          );
+                        })}
+                      </Accordion>
+                    ) : (
+                      <div className="space-y-3">
+                        {getFilteredHolidays().map((holiday) => (
+                          <div key={holiday.id} className="flex items-center justify-between p-3 border rounded-lg">
+                            <div className="flex items-center space-x-3">
+                              <div className="flex items-center justify-center w-8 h-8 bg-blue-100 rounded-lg">
+                                <CalendarIcon className="w-4 h-4 text-blue-600" />
+                              </div>
+                              <div>
+                                <h4 className="font-medium text-sm">{holiday.name}</h4>
+                                <p className="text-xs text-gray-600">{format(new Date(holiday.date), 'MMMM d, yyyy')}</p>
+                                {holiday.description && (
+                                  <p className="text-xs text-gray-500">{holiday.description}</p>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Badge className={getTypeColor(holiday.type)} variant="outline">
+                                {holiday.type}
+                              </Badge>
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => handleDeleteHoliday(holiday.id)}
+                                className="text-red-600 hover:bg-red-50"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+
+              {viewMode === 'calendar' && (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <Card className="p-4">
+                    <h3 className="font-semibold text-lg mb-4">Holiday Calendar</h3>
+                    <Calendar
+                      mode="single"
+                      selected={selectedDate}
+                      onSelect={setSelectedDate}
+                      className="rounded-md border"
+                      modifiers={{
+                        holiday: (date) => isHoliday(date)
+                      }}
+                      modifiersStyles={{
+                        holiday: { 
+                          backgroundColor: '#fecaca', 
+                          color: '#dc2626',
+                          fontWeight: 'bold'
+                        }
+                      }}
+                    />
+                  </Card>
+                  <Card className="p-4">
+                    <h3 className="font-semibold text-lg mb-4">Legend & Quick Stats</h3>
+                    <div className="space-y-4">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-4 h-4 bg-red-200 rounded"></div>
+                        <span className="text-sm">Holiday</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <div className="w-4 h-4 bg-gray-200 rounded"></div>
+                        <span className="text-sm">Weekend</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <div className="w-4 h-4 bg-green-200 rounded"></div>
+                        <span className="text-sm">Working Day</span>
+                      </div>
+                      
+                      <div className="pt-4 border-t">
+                        <h4 className="font-medium mb-2">Current Month Stats</h4>
+                        {selectedMonth !== 'All' && (
+                          <div className="space-y-1 text-sm">
+                            <div className="flex justify-between">
+                              <span>Working Days:</span>
+                              <span className="font-medium">{getMonthlyStats(months.indexOf(selectedMonth)).working}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Holidays:</span>
+                              <span className="font-medium">{getMonthlyStats(months.indexOf(selectedMonth)).holidays}</span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </Card>
                 </div>
               )}
 
-              {/* Holiday List */}
-              <div>
-                <h3 className="font-medium text-gray-900 mb-3">
-                  {selectedMonth === 'All' ? `All Holidays in ${selectedYear}` : `${selectedMonth} ${selectedYear} Holidays`}
-                </h3>
-                <div className="space-y-3">
-                  {getFilteredHolidays().map((holiday) => (
-                    <div key={holiday.id} className="flex items-center justify-between p-3 border rounded-lg">
-                      <div className="flex items-center space-x-3">
-                        <div className="flex items-center justify-center w-8 h-8 bg-blue-100 rounded-lg">
-                          <Calendar className="w-4 h-4 text-blue-600" />
-                        </div>
-                        <div>
-                          <h4 className="font-medium text-sm">{holiday.name}</h4>
-                          <p className="text-xs text-gray-600">{holiday.date}</p>
-                          {holiday.description && (
-                            <p className="text-xs text-gray-500">{holiday.description}</p>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Badge className={getTypeColor(holiday.type)} variant="outline">
-                          {holiday.type}
-                        </Badge>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => handleDeleteHoliday(holiday.id)}
-                          className="text-red-600 hover:bg-red-50"
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
+              {viewMode === 'chart' && (
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <Card className="p-4">
+                      <h3 className="font-semibold text-lg mb-4 flex items-center">
+                        <BarChart3 className="w-5 h-5 mr-2" />
+                        Monthly Breakdown
+                      </h3>
+                      <ResponsiveContainer width="100%" height={300}>
+                        <BarChart data={getChartData()}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="month" />
+                          <YAxis />
+                          <Tooltip />
+                          <Legend />
+                          <Bar dataKey="working" stackId="a" fill="#10B981" name="Working Days" />
+                          <Bar dataKey="holidays" stackId="a" fill="#EF4444" name="Holidays" />
+                          <Bar dataKey="weekends" stackId="a" fill="#6B7280" name="Weekends" />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </Card>
+                    
+                    <Card className="p-4">
+                      <h3 className="font-semibold text-lg mb-4 flex items-center">
+                        <PieChart className="w-5 h-5 mr-2" />
+                        Yearly Distribution
+                      </h3>
+                      <ResponsiveContainer width="100%" height={300}>
+                        <RechartsPieChart>
+                          <Pie
+                            dataKey="value"
+                            data={getPieChartData()}
+                            cx="50%"
+                            cy="50%"
+                            outerRadius={80}
+                            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                          >
+                            {getPieChartData().map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={entry.color} />
+                            ))}
+                          </Pie>
+                          <Tooltip />
+                        </RechartsPieChart>
+                      </ResponsiveContainer>
+                    </Card>
+                  </div>
                 </div>
-              </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -372,8 +661,8 @@ const CompanySettings = () => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="National">National</SelectItem>
-                  <SelectItem value="Company">Company</SelectItem>
+                  <SelectItem value="National">National Holiday</SelectItem>
+                  <SelectItem value="Company">Company Holiday</SelectItem>
                 </SelectContent>
               </Select>
             </div>
