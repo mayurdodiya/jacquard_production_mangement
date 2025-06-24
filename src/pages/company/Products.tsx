@@ -22,13 +22,15 @@ import QRCodeModal from "@/components/modals/QRCodeModal";
 import { toast } from "sonner";
 import EditProductModal from "@/components/modals/EditProductModal";
 import ViewProductModal from "@/components/modals/ViewProductModal";
+import AddProductModal from "@/components/modals/AddProductModal";
 
 const Products = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isQRModalOpen, setIsQRModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);  
 
   const [products, setProducts] = useState([
     {
@@ -85,6 +87,10 @@ const Products = () => {
     }
   };
 
+  const handleAddProduct = (newProduct: any) => {
+    setProducts([...products, newProduct]);
+  };
+
   const handleViewQR = (product: any) => {
     setSelectedProduct(product);
     setIsQRModalOpen(true);
@@ -126,7 +132,7 @@ const Products = () => {
           <h1 className="text-3xl font-bold text-gray-900">Products</h1>
           <p className="text-gray-600">Manage your product catalog</p>
         </div>
-        <Button>
+         <Button onClick={() => setIsAddModalOpen(true)}>
           <Plus className="w-4 h-4 mr-2" />
           Create Product
         </Button>
@@ -264,20 +270,12 @@ const Products = () => {
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => handleViewQR(product)}
+                            onClick={(e) =>{e.stopPropagation(); handleViewQR(product)}}
                             className="flex-1 text-[10px] h-7 px-2"
                           >
                             <QrCode className="w-3 h-3 mr-1" />
                             QR
                           </Button>
-                          {/* <Button
-                            size="sm"
-                            variant="outline"
-                            className="text-[10px] h-7 px-2"
-                            onClick={() => handleEditProduct(product.id)}
-                          >
-                            <Edit className="w-3 h-3" />
-                          </Button> */}
                            <Button 
                         size="sm" 
                         variant="outline"
@@ -292,7 +290,7 @@ const Products = () => {
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => handleDeleteProduct(product.id)}
+                            onClick={(e) => {e.stopPropagation(); handleDeleteProduct(product.id)}}
                             className="text-red-600 hover:bg-red-50 text-[10px] h-7 px-2"
                           >
                             <Trash2 className="w-3 h-3" />
@@ -312,6 +310,13 @@ const Products = () => {
         isOpen={isQRModalOpen}
         onClose={() => setIsQRModalOpen(false)}
         product={selectedProduct || { id: "", name: "", image: "" }}
+      />
+
+      
+      <AddProductModal 
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onAdd={handleAddProduct}
       />
 
       <EditProductModal 
