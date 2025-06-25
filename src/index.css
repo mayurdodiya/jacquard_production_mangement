@@ -86,17 +86,21 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border transition-colors;
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground transition-colors duration-300;
   }
 
-  /* Transparent Scrollbars */
+  /* Enhanced Scrollbars with dark mode support */
   .custom-scrollbar {
     scrollbar-width: thin;
     scrollbar-color: rgba(59, 130, 246, 0.3) transparent;
+  }
+
+  .dark .custom-scrollbar {
+    scrollbar-color: rgba(96, 165, 250, 0.4) transparent;
   }
 
   .custom-scrollbar::-webkit-scrollbar {
@@ -111,20 +115,33 @@
   .custom-scrollbar::-webkit-scrollbar-thumb {
     background: rgba(59, 130, 246, 0.3);
     border-radius: 4px;
+    transition: background 0.3s ease;
+  }
+
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(96, 165, 250, 0.4);
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: rgba(59, 130, 246, 0.5);
   }
 
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(96, 165, 250, 0.6);
+  }
+
   .custom-scrollbar::-webkit-scrollbar-corner {
     background: transparent;
   }
 
-  /* Sidebar specific scrollbar */
+  /* Enhanced Sidebar scrollbar with dark mode */
   .sidebar-scrollbar {
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+  }
+
+  .dark .sidebar-scrollbar {
+    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
   }
 
   .sidebar-scrollbar::-webkit-scrollbar {
@@ -138,9 +155,45 @@
   .sidebar-scrollbar::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.2);
     border-radius: 3px;
+    transition: background 0.3s ease;
+  }
+
+  .dark .sidebar-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
   }
 
   .sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.3);
+  }
+
+  .dark .sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.25);
+  }
+
+  /* Smooth transitions for theme changes */
+  * {
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+  }
+
+  /* Enhanced animations for theme toggle */
+  @keyframes spin-in-180 {
+    from {
+      transform: rotate(-180deg) scale(0.8);
+      opacity: 0;
+    }
+    to {
+      transform: rotate(0deg) scale(1);
+      opacity: 1;
+    }
+  }
+
+  .animate-in {
+    animation-fill-mode: both;
+  }
+
+  .spin-in-180 {
+    animation: spin-in-180 0.3s ease-out;
   }
 }
