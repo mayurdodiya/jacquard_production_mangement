@@ -28,6 +28,7 @@ import {
   ChevronDown,
   ChevronRight,
   LucideProps,
+  ChevronLeft,
 } from "lucide-react";
 
 const CompanyLayout = () => {
@@ -36,6 +37,10 @@ const CompanyLayout = () => {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(true);
    const [settingsOpen, setSettingsOpen] = useState(false);
+   
+   const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
 
   const handleLogout = () => {
     logout();
@@ -45,21 +50,9 @@ const CompanyLayout = () => {
   const menuItems = [
     { icon: Home, label: "Dashboard", path: ["/company"], exact: true },
     { icon: User, label: "Profile", path: ["/company/profile"] },
-    {
-      icon: Users,
-      label: "Employees",
-      path: [
-        "/company/employees",
-        "/company/employees/view-details",
-        "/company/employees/:id",
-      ],
-    },
+    { icon: Users, label: "Employees", path: ["/company/employees","/company/employees/view-details","/company/employees/:id"] },
     { icon: Package2, label: "Products", path: ["/company/products"] },
-    {
-      icon: ShoppingCart,
-      label: "Purchase Orders",
-      path: ["/company/purchase-orders"],
-    },
+    { icon: ShoppingCart, label: "Purchase Orders", path: ["/company/purchase-orders"] },
     { icon: Package, label: "Stock", path: ["/company/stock"] },
     { icon: Zap, label: "Daily Consumption", path: ["/company/consumption"] },
     { icon: UserCheck, label: "Customers", path: ["/company/customers"] },
@@ -83,6 +76,8 @@ const CompanyLayout = () => {
 
   return (
     <div className="min-h-screen flex bg-slate-50 w-full relative">
+    {/* <div className={`min-h-screen flex bg-slate-50 w-full relative ${sidebarOpen ? "pl-72" : "pl-20"} transition-all duration-300`}> */}
+
       {/* Background Image */}
       <div
         className="fixed inset-0 bg-cover bg-center bg-no-repeat opacity-10 pointer-events-none"
@@ -93,25 +88,32 @@ const CompanyLayout = () => {
       />
 
       {/* Mobile Sidebar Overlay */}
-      {sidebarOpen && (
+      {/* {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
-      )}
+      )} */}
 
       {/* Fixed Sidebar */}
       <div className="flex">
-        <aside
+        {/* <aside
           className={`${
             sidebarOpen ? "translate-x-0" : "-translate-x-full"
           } fixed lg:sticky top-0 z-50 lg:z-0
             w-72 h-screen bg-gradient-to-b from-slate-800/80 to-slate-900 
             shadow-2xl flex flex-col 
             transition-all duration-300 ease-in-out`}
-        >
+        > */}
+          <aside
+            className={`fixed lg:sticky top-0 z-50 lg:z-0
+              ${sidebarOpen ? "w-72" : "w-20"} 
+              h-screen bg-gradient-to-b from-slate-800/80 to-slate-900 
+              shadow-2xl flex flex-col 
+              transition-all duration-300 ease-in-out`}
+          >
           {/* Header */}
-          <div className="p-6 border-b border-slate-700 bg-gradient-to-r from-blue-600 to-indigo-700 text-white flex-shrink-0">
+          {/* <div className="p-6 border-b border-slate-700 bg-gradient-to-r from-blue-600 to-indigo-700 text-white flex-shrink-0">
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-xl font-bold">Company Panel</h1>
@@ -124,33 +126,103 @@ const CompanyLayout = () => {
                 <X className="w-5 h-5" />
               </button>
             </div>
+          </div> */}
+          <div className={`${sidebarOpen ? 'p-6' : 'p-4'} border-b border-slate-700 bg-gradient-to-r from-blue-600 to-indigo-700 text-white flex-shrink-0`}>
+          <div className="flex items-center justify-between">
+            {sidebarOpen && (
+              <div>
+                {/* <h1 className="text-xl font-bold">Company Panel</h1> */}
+                <h1 className="text-xl font-bold">Company Panel</h1> {/* ✅ Text when sidebar open */}
+                <p className="text-blue-100 text-sm mt-1">Business Management</p>
+              </div>
+            ) 
+            // : (
+              // <div className="flex items-center justify-center w-8 h-8 bg-white/20 rounded-lg">
+              //   {<Factory className="w-5 h-5" />}
+              // </div>
+              // <h5></h5>
+            // )
+            }
+            
+            
+            {/* Desktop Toggle Button */}
+            <button
+              onClick={toggleSidebar}
+              // className="hidden lg:flex text-white hover:bg-white/20 p-2 rounded-lg transition-colors"
+              className="text-white hover:bg-white/20 p-2 rounded-lg transition-colors"
+            >
+              {sidebarOpen ? <ChevronLeft className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+            
+            {/* Mobile Close Button */}
+            {<button
+              onClick={() => setSidebarOpen(false)}
+              className="lg:hidden text-white hover:bg-white/20 p-2 rounded-lg transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>}
+            {/* <button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="p-2 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-lg"
+            >
+              <Menu className="w-5 h-5" />
+            </button> */}
+          </div>
           </div>
 
           {/* Navigation - Scrollable */}
           <nav className="flex-1 py-6 px-4 space-y-2 bg-gradient-to-b from-slate-800 to-slate-900 overflow-y-auto sidebar-scrollbar">
             {menuItems.map((item) => (
+              // <Link
+              //   key={item.label}
+              //   to={item.path[0]}
+              //   className={`group flex items-center px-4 py-3 rounded-xl transition-all duration-300 ${
+              //     isActive(item)
+              //       ? "bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-lg"
+              //       : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
+              //   }`}
+              // >
+              //   <div
+              //     className={`p-2 rounded-lg mr-3 transition-all duration-300 ${
+              //       isActive(item)
+              //         ? "bg-white/20"
+              //         : "bg-slate-700/50 group-hover:bg-slate-600/50"
+              //     }`}
+              //   >
+              //     <item.icon className="w-5 h-5" />
+              //   </div>
+              //   <span className="font-medium text-sm">{item.label}</span>
+              //   {isActive(item) && (
+              //     <div className="ml-auto w-2 h-2 bg-white rounded-full"></div>
+              //   )}
+              // </Link>
               <Link
-                key={item.label}
-                to={item.path[0]}
-                className={`group flex items-center px-4 py-3 rounded-xl transition-all duration-300 ${
+              key={item.label}
+              to={item.path[0]}
+              className={`group flex items-center ${sidebarOpen ? 'px-4 py-3' : 'px-2 py-3 justify-center'} rounded-xl transition-all duration-300 ${
+                isActive(item)
+                  ? "bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-lg"
+                  : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
+              }`}
+              title={!sidebarOpen ? item.label : undefined}
+            >
+              <div
+                className={`p-2 rounded-lg ${sidebarOpen ? 'mr-3' : ''} transition-all duration-300 ${
                   isActive(item)
-                    ? "bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-lg"
-                    : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
+                    ? "bg-white/20"
+                    : "bg-slate-700/50 group-hover:bg-slate-600/50"
                 }`}
               >
-                <div
-                  className={`p-2 rounded-lg mr-3 transition-all duration-300 ${
-                    isActive(item)
-                      ? "bg-white/20"
-                      : "bg-slate-700/50 group-hover:bg-slate-600/50"
-                  }`}
-                >
-                  <item.icon className="w-5 h-5" />
-                </div>
-                <span className="font-medium text-sm">{item.label}</span>
-                {isActive(item) && (
-                  <div className="ml-auto w-2 h-2 bg-white rounded-full"></div>
-                )}
+                <item.icon className="w-5 h-5" />
+              </div>
+              {sidebarOpen && (
+                <>
+                  <span className="font-medium text-sm">{item.label}</span>
+                  {isActive(item) && (
+                    <div className="ml-auto w-2 h-2 bg-white rounded-full"></div>
+                  )}
+                </>
+              )}
               </Link>
             ))}
 
@@ -189,7 +261,7 @@ const CompanyLayout = () => {
           </nav>
 
           {/* Footer */}
-          <div className="p-4 border-t border-slate-700 bg-gradient-to-b from-slate-800 to-slate-900 flex-shrink-0">
+          {/* <div className="p-4 border-t border-slate-700 bg-gradient-to-b from-slate-800 to-slate-900 flex-shrink-0">
             <Button
               onClick={handleLogout}
               className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white border-0 shadow-lg"
@@ -197,7 +269,19 @@ const CompanyLayout = () => {
               <LogOut className="w-4 h-4 mr-2" />
               Logout
             </Button>
-          </div>
+          </div> */}
+          <div className={`${sidebarOpen ? 'p-4' : 'p-2'} border-t border-slate-700 bg-gradient-to-b from-slate-800 to-slate-900 flex-shrink-0`}>
+          <Button 
+            onClick={handleLogout} 
+            className={`w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white border-0 shadow-lg ${
+              !sidebarOpen ? 'px-2' : ''
+            }`}
+            title={!sidebarOpen ? 'Logout' : undefined}
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            {sidebarOpen && 'Logout'}
+          </Button>
+        </div>
         </aside>
       </div>
 
@@ -219,7 +303,7 @@ const CompanyLayout = () => {
         </div>
 
         {/* Content Area - Scrollable */}
-        <div className="flex-1 overflow-y-auto bg-gradient-to-br from-blue-50/80 to-indigo-50/80 backdrop-blur-sm custom-scrollbar">
+        <div className="flex-1 overflow-y-auto bg-gradient-to-br from-blue-50/80 to-indigo-50/80 backdrop-blur-sm custom-scrollbar scroll-smooth">
           <div className="p-6 max-w-7xl mx-auto">
             <Outlet />
           </div>
