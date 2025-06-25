@@ -187,5 +187,5 @@ const CompanyLayout = () => {
     </div>
   );
 };
-
+  
 export default CompanyLayout;
