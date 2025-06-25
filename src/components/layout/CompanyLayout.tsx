@@ -183,6 +183,7 @@ const CompanyLayout = () => {
             <Outlet />
           </div>
         </div>
+        
       </main>
     </div>
   );
