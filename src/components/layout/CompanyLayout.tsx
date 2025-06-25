@@ -101,103 +101,108 @@ const CompanyLayout = () => {
       )}
 
       {/* Fixed Sidebar */}
-      <aside
-        className={`${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } fixed lg:relative lg:translate-x-0 z-50 w-72 h-screen bg-gradient-to-b from-slate-800 to-slate-900 shadow-2xl flex flex-col transition-all duration-300 ease-in-out`}
-      >
-        {/* Header */}
-        <div className="p-6 border-b border-slate-700 bg-gradient-to-r from-blue-600 to-indigo-700 text-white flex-shrink-0">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-xl font-bold">Company Panel</h1>
-              <p className="text-blue-100 text-sm mt-1">Business Management</p>
+      <div className="flex">
+        <aside
+          className={`${
+            sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          } fixed lg:sticky top-0 z-50 lg:z-0
+            w-72 h-screen bg-gradient-to-b from-slate-800/80 to-slate-900 
+            shadow-2xl flex flex-col 
+            transition-all duration-300 ease-in-out`}
+        >
+          {/* Header */}
+          <div className="p-6 border-b border-slate-700 bg-gradient-to-r from-blue-600 to-indigo-700 text-white flex-shrink-0">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-xl font-bold">Company Panel</h1>
+                <p className="text-blue-100 text-sm mt-1">Business Management</p>
+              </div>
+              <button
+                onClick={() => setSidebarOpen(false)}
+                className="lg:hidden text-white hover:bg-white/20 p-2 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
             </div>
-            <button
-              onClick={() => setSidebarOpen(false)}
-              className="lg:hidden text-white hover:bg-white/20 p-2 rounded-lg transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
           </div>
-        </div>
 
-        {/* Navigation - Scrollable */}
-        <nav className="flex-1 py-6 px-4 space-y-2 bg-gradient-to-b from-slate-800 to-slate-900 overflow-y-auto sidebar-scrollbar">
-          {menuItems.map((item) => (
-            <Link
-              key={item.label}
-              to={item.path[0]}
-              className={`group flex items-center px-4 py-3 rounded-xl transition-all duration-300 ${
-                isActive(item)
-                  ? "bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-lg"
-                  : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
-              }`}
-            >
-              <div
-                className={`p-2 rounded-lg mr-3 transition-all duration-300 ${
+          {/* Navigation - Scrollable */}
+          <nav className="flex-1 py-6 px-4 space-y-2 bg-gradient-to-b from-slate-800 to-slate-900 overflow-y-auto sidebar-scrollbar">
+            {menuItems.map((item) => (
+              <Link
+                key={item.label}
+                to={item.path[0]}
+                className={`group flex items-center px-4 py-3 rounded-xl transition-all duration-300 ${
                   isActive(item)
-                    ? "bg-white/20"
-                    : "bg-slate-700/50 group-hover:bg-slate-600/50"
+                    ? "bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-lg"
+                    : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
                 }`}
               >
-                <item.icon className="w-5 h-5" />
-              </div>
-              <span className="font-medium text-sm">{item.label}</span>
-              {isActive(item) && (
-                <div className="ml-auto w-2 h-2 bg-white rounded-full"></div>
-              )}
-            </Link>
-          ))}
+                <div
+                  className={`p-2 rounded-lg mr-3 transition-all duration-300 ${
+                    isActive(item)
+                      ? "bg-white/20"
+                      : "bg-slate-700/50 group-hover:bg-slate-600/50"
+                  }`}
+                >
+                  <item.icon className="w-5 h-5" />
+                </div>
+                <span className="font-medium text-sm">{item.label}</span>
+                {isActive(item) && (
+                  <div className="ml-auto w-2 h-2 bg-white rounded-full"></div>
+                )}
+              </Link>
+            ))}
 
-           {/* Settings Dropdown */}
-          <div className="space-y-1">
-            <button
-              onClick={() => setSettingsOpen(!settingsOpen)}
-              className="group flex items-center w-full px-4 py-3 rounded-xl transition-all duration-300 text-slate-300 hover:bg-slate-700/50 hover:text-white"
+            {/* Settings Dropdown */}
+            <div className="space-y-1">
+              <button
+                onClick={() => setSettingsOpen(!settingsOpen)}
+                className="group flex items-center w-full px-4 py-3 rounded-xl transition-all duration-300 text-slate-300 hover:bg-slate-700/50 hover:text-white"
+              >
+                <div className="p-2 rounded-lg mr-3 transition-all duration-300 bg-slate-700/50 group-hover:bg-slate-600/50">
+                  <Settings className="w-5 h-5" />
+                </div>
+                <span className="font-medium text-sm flex-1 text-left">Settings</span>
+                {settingsOpen ? (
+                  <ChevronDown className="w-4 h-4" />
+                ) : (
+                  <ChevronRight className="w-4 h-4" />
+                )}
+              </button>
+              
+              {settingsOpen && (
+                <div className="ml-4 space-y-1">
+                  {settingsItems.map((setting) => (
+                    <Link
+                      key={setting.label}
+                      to={setting.path}
+                      className="group flex items-center px-4 py-2 rounded-lg transition-all duration-300 text-slate-400 hover:bg-slate-700/30 hover:text-white text-sm"
+                    >
+                      <CalendarDays className="w-4 h-4 mr-3" />
+                      {setting.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          </nav>
+
+          {/* Footer */}
+          <div className="p-4 border-t border-slate-700 bg-gradient-to-b from-slate-800 to-slate-900 flex-shrink-0">
+            <Button
+              onClick={handleLogout}
+              className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white border-0 shadow-lg"
             >
-              <div className="p-2 rounded-lg mr-3 transition-all duration-300 bg-slate-700/50 group-hover:bg-slate-600/50">
-                <Settings className="w-5 h-5" />
-              </div>
-              <span className="font-medium text-sm flex-1 text-left">Settings</span>
-              {settingsOpen ? (
-                <ChevronDown className="w-4 h-4" />
-              ) : (
-                <ChevronRight className="w-4 h-4" />
-              )}
-            </button>
-            
-            {settingsOpen && (
-              <div className="ml-4 space-y-1">
-                {settingsItems.map((setting) => (
-                  <Link
-                    key={setting.label}
-                    to={setting.path}
-                    className="group flex items-center px-4 py-2 rounded-lg transition-all duration-300 text-slate-400 hover:bg-slate-700/30 hover:text-white text-sm"
-                  >
-                    <CalendarDays className="w-4 h-4 mr-3" />
-                    {setting.label}
-                  </Link>
-                ))}
-              </div>
-            )}
+              <LogOut className="w-4 h-4 mr-2" />
+              Logout
+            </Button>
           </div>
-        </nav>
-
-        {/* Footer */}
-        <div className="p-4 border-t border-slate-700 bg-gradient-to-b from-slate-800 to-slate-900 flex-shrink-0">
-          <Button
-            onClick={handleLogout}
-            className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white border-0 shadow-lg"
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            Logout
-          </Button>
-        </div>
-      </aside>
+        </aside>
+      </div>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col min-h-screen lg:ml-0 relative z-10">
+      <main className="flex-1 flex flex-col">
         {/* Mobile Header */}
         <div className="lg:hidden bg-white/95 backdrop-blur-sm shadow-sm border-b p-4 flex-shrink-0">
           <div className="flex items-center justify-between">
