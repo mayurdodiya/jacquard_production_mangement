@@ -21,7 +21,8 @@ import {
   ChevronDown,
   ChevronRight,
   CalendarDays,
-  Zap
+  Zap,
+  ChevronLeft
 } from 'lucide-react';
 
 const CompanyLayout = () => {
@@ -34,6 +35,10 @@ const CompanyLayout = () => {
   const handleLogout = () => {
     logout();
     navigate('/login');
+  };
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
   };
 
   const menuItems = [
@@ -82,16 +87,32 @@ const CompanyLayout = () => {
 
       {/* Fixed Sidebar */}
       <aside className={`${
-        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      } fixed lg:relative lg:translate-x-0 z-50 w-72 h-screen bg-gradient-to-b from-slate-800 to-slate-900 shadow-2xl flex flex-col transition-all duration-300 ease-in-out`}>
+        sidebarOpen ? 'translate-x-0 w-72' : '-translate-x-full lg:translate-x-0 lg:w-16'
+      } fixed lg:relative z-50 h-screen bg-gradient-to-b from-slate-800 to-slate-900 shadow-2xl flex flex-col transition-all duration-300 ease-in-out flex-shrink-0`}>
         
         {/* Header */}
-        <div className="p-6 border-b border-slate-700 bg-gradient-to-r from-blue-600 to-indigo-700 text-white flex-shrink-0">
+        <div className={`${sidebarOpen ? 'p-6' : 'p-4'} border-b border-slate-700 bg-gradient-to-r from-blue-600 to-indigo-700 text-white flex-shrink-0`}>
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-xl font-bold">Company Panel</h1>
-              <p className="text-blue-100 text-sm mt-1">Business Management</p>
-            </div>
+            {sidebarOpen ? (
+              <div>
+                <h1 className="text-xl font-bold">Company Panel</h1>
+                <p className="text-blue-100 text-sm mt-1">Business Management</p>
+              </div>
+            ) : (
+              <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                <Factory className="w-5 h-5" />
+              </div>
+            )}
+            
+            {/* Desktop Toggle Button */}
+            <button
+              onClick={toggleSidebar}
+              className="hidden lg:flex text-white hover:bg-white/20 p-2 rounded-lg transition-colors"
+            >
+              {sidebarOpen ? <ChevronLeft className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+            
+            {/* Mobile Close Button */}
             <button
               onClick={() => setSidebarOpen(false)}
               className="lg:hidden text-white hover:bg-white/20 p-2 rounded-lg transition-colors"
@@ -107,14 +128,15 @@ const CompanyLayout = () => {
             <Link
               key={item.label}
               to={item.path[0]}
-              className={`group flex items-center px-4 py-3 rounded-xl transition-all duration-300 ${
+              className={`group flex items-center ${sidebarOpen ? 'px-4 py-3' : 'px-2 py-3 justify-center'} rounded-xl transition-all duration-300 ${
                 isActive(item)
                   ? "bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-lg"
                   : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
               }`}
+              title={!sidebarOpen ? item.label : undefined}
             >
               <div
-                className={`p-2 rounded-lg mr-3 transition-all duration-300 ${
+                className={`p-2 rounded-lg ${sidebarOpen ? 'mr-3' : ''} transition-all duration-300 ${
                   isActive(item)
                     ? "bg-white/20"
                     : "bg-slate-700/50 group-hover:bg-slate-600/50"
@@ -122,61 +144,70 @@ const CompanyLayout = () => {
               >
                 <item.icon className="w-5 h-5" />
               </div>
-              <span className="font-medium text-sm">{item.label}</span>
-              {isActive(item) && (
-                <div className="ml-auto w-2 h-2 bg-white rounded-full"></div>
+              {sidebarOpen && (
+                <>
+                  <span className="font-medium text-sm">{item.label}</span>
+                  {isActive(item) && (
+                    <div className="ml-auto w-2 h-2 bg-white rounded-full"></div>
+                  )}
+                </>
               )}
             </Link>
           ))}
 
-          {/* Settings Dropdown */}
-          <div className="space-y-1">
-            <button
-              onClick={() => setSettingsOpen(!settingsOpen)}
-              className="group flex items-center w-full px-4 py-3 rounded-xl transition-all duration-300 text-slate-300 hover:bg-slate-700/50 hover:text-white"
-            >
-              <div className="p-2 rounded-lg mr-3 transition-all duration-300 bg-slate-700/50 group-hover:bg-slate-600/50">
-                <Settings className="w-5 h-5" />
-              </div>
-              <span className="font-medium text-sm flex-1 text-left">Settings</span>
-              {settingsOpen ? (
-                <ChevronDown className="w-4 h-4" />
-              ) : (
-                <ChevronRight className="w-4 h-4" />
+          {/* Settings Dropdown - Only show when sidebar is open */}
+          {sidebarOpen && (
+            <div className="space-y-1">
+              <button
+                onClick={() => setSettingsOpen(!settingsOpen)}
+                className="group flex items-center w-full px-4 py-3 rounded-xl transition-all duration-300 text-slate-300 hover:bg-slate-700/50 hover:text-white"
+              >
+                <div className="p-2 rounded-lg mr-3 transition-all duration-300 bg-slate-700/50 group-hover:bg-slate-600/50">
+                  <Settings className="w-5 h-5" />
+                </div>
+                <span className="font-medium text-sm flex-1 text-left">Settings</span>
+                {settingsOpen ? (
+                  <ChevronDown className="w-4 h-4" />
+                ) : (
+                  <ChevronRight className="w-4 h-4" />
+                )}
+              </button>
+              
+              {settingsOpen && (
+                <div className="ml-4 space-y-1">
+                  {settingsItems.map((setting) => (
+                    <Link
+                      key={setting.label}
+                      to={setting.path}
+                      className="group flex items-center px-4 py-2 rounded-lg transition-all duration-300 text-slate-400 hover:bg-slate-700/30 hover:text-white text-sm"
+                    >
+                      <CalendarDays className="w-4 h-4 mr-3" />
+                      {setting.label}
+                    </Link>
+                  ))}
+                </div>
               )}
-            </button>
-            
-            {settingsOpen && (
-              <div className="ml-4 space-y-1">
-                {settingsItems.map((setting) => (
-                  <Link
-                    key={setting.label}
-                    to={setting.path}
-                    className="group flex items-center px-4 py-2 rounded-lg transition-all duration-300 text-slate-400 hover:bg-slate-700/30 hover:text-white text-sm"
-                  >
-                    <CalendarDays className="w-4 h-4 mr-3" />
-                    {setting.label}
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
+            </div>
+          )}
         </nav>
 
         {/* Footer */}
-        <div className="p-4 border-t border-slate-700 bg-gradient-to-b from-slate-800 to-slate-900 flex-shrink-0">
+        <div className={`${sidebarOpen ? 'p-4' : 'p-2'} border-t border-slate-700 bg-gradient-to-b from-slate-800 to-slate-900 flex-shrink-0`}>
           <Button 
             onClick={handleLogout} 
-            className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white border-0 shadow-lg"
+            className={`w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white border-0 shadow-lg ${
+              !sidebarOpen ? 'px-2' : ''
+            }`}
+            title={!sidebarOpen ? 'Logout' : undefined}
           >
             <LogOut className="w-4 h-4 mr-2" />
-            Logout
+            {sidebarOpen && 'Logout'}
           </Button>
         </div>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col min-h-screen lg:ml-0 relative z-10">
+      <main className="flex-1 flex flex-col min-h-screen relative z-10">
         {/* Mobile Header */}
         <div className="lg:hidden bg-white/95 backdrop-blur-sm shadow-sm border-b p-4 flex-shrink-0">
           <div className="flex items-center justify-between">
