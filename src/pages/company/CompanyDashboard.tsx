@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -13,8 +12,28 @@ import {
   CheckCircle,
   Clock,
   Factory,
-  ShoppingCart
+  ShoppingCart,
+  BarChart3,
+  PieChart,
+  TrendingDown
 } from 'lucide-react';
+import { 
+  LineChart, 
+  Line, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  Legend, 
+  ResponsiveContainer, 
+  BarChart, 
+  Bar, 
+  PieChart as RechartsPieChart, 
+  Cell, 
+  Pie,
+  AreaChart,
+  Area
+} from 'recharts';
 
 const CompanyDashboard = () => {
   const stats = [
@@ -82,6 +101,39 @@ const CompanyDashboard = () => {
     }
   };
 
+  // New chart data
+  const monthlyRevenue = [
+    { month: 'Jan', revenue: 65000, target: 70000 },
+    { month: 'Feb', revenue: 59000, target: 70000 },
+    { month: 'Mar', revenue: 80000, target: 75000 },
+    { month: 'Apr', revenue: 81000, target: 75000 },
+    { month: 'May', revenue: 124500, target: 80000 },
+    { month: 'Jun', revenue: 95000, target: 85000 }
+  ];
+
+  const productionData = [
+    { month: 'Jan', units: 1200, efficiency: 85 },
+    { month: 'Feb', units: 1500, efficiency: 88 },
+    { month: 'Mar', units: 1800, efficiency: 92 },
+    { month: 'Apr', units: 2100, efficiency: 89 },
+    { month: 'May', units: 2340, efficiency: 94 },
+    { month: 'Jun', units: 2200, efficiency: 91 }
+  ];
+
+  const orderStatusData = [
+    { name: 'Completed', value: 65, color: '#10B981' },
+    { name: 'Processing', value: 25, color: '#3B82F6' },
+    { name: 'Pending', value: 8, color: '#F59E0B' },
+    { name: 'Cancelled', value: 2, color: '#EF4444' }
+  ];
+
+  const employeePerformance = [
+    { department: 'Production', performance: 94, target: 90 },
+    { department: 'Quality', performance: 98, target: 95 },
+    { department: 'Maintenance', performance: 87, target: 85 },
+    { department: 'Logistics', performance: 91, target: 88 }
+  ];
+
   return (
     <div className="space-y-6 relative">
       {/* Background Image */}
@@ -118,6 +170,147 @@ const CompanyDashboard = () => {
           ))}
         </div>
 
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Revenue vs Target Chart */}
+          <Card className="border-slate-200 shadow-lg bg-white/95 backdrop-blur-sm">
+            <CardHeader>
+              <CardTitle className="text-slate-800 flex items-center">
+                <BarChart3 className="w-5 h-5 mr-2 text-blue-600" />
+                Revenue vs Target
+              </CardTitle>
+              <CardDescription className="text-slate-600">Monthly revenue performance against targets</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={monthlyRevenue}>
+                    <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+                    <XAxis dataKey="month" />
+                    <YAxis />
+                    <Tooltip formatter={(value) => [`$${value.toLocaleString()}`, '']} />
+                    <Legend />
+                    <Bar dataKey="revenue" fill="#3B82F6" name="Actual Revenue" />
+                    <Bar dataKey="target" fill="#10B981" name="Target Revenue" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Production Trend */}
+          <Card className="border-slate-200 shadow-lg bg-white/95 backdrop-blur-sm">
+            <CardHeader>
+              <CardTitle className="text-slate-800 flex items-center">
+                <TrendingUp className="w-5 h-5 mr-2 text-green-600" />
+                Production Trends
+              </CardTitle>
+              <CardDescription className="text-slate-600">Units produced and efficiency over time</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={productionData}>
+                    <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+                    <XAxis dataKey="month" />
+                    <YAxis yAxisId="left" />
+                    <YAxis yAxisId="right" orientation="right" />
+                    <Tooltip />
+                    <Legend />
+                    <Area 
+                      yAxisId="left"
+                      type="monotone" 
+                      dataKey="units" 
+                      stackId="1"
+                      stroke="#8B5CF6" 
+                      fill="url(#unitsGradient)" 
+                      name="Units Produced"
+                    />
+                    <Line 
+                      yAxisId="right"
+                      type="monotone" 
+                      dataKey="efficiency" 
+                      stroke="#F59E0B" 
+                      strokeWidth={3}
+                      name="Efficiency %"
+                    />
+                    <defs>
+                      <linearGradient id="unitsGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#8B5CF6" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="#8B5CF6" stopOpacity={0.1}/>
+                      </linearGradient>
+                    </defs>
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Second Row of Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Order Status Distribution */}
+          <Card className="border-slate-200 shadow-lg bg-white/95 backdrop-blur-sm">
+            <CardHeader>
+              <CardTitle className="text-slate-800 flex items-center">
+                <PieChart className="w-5 h-5 mr-2 text-purple-600" />
+                Order Status Distribution
+              </CardTitle>
+              <CardDescription className="text-slate-600">Current status of all orders</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <RechartsPieChart>
+                    <Pie
+                      data={orderStatusData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {orderStatusData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </RechartsPieChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Employee Performance */}
+          <Card className="border-slate-200 shadow-lg bg-white/95 backdrop-blur-sm">
+            <CardHeader>
+              <CardTitle className="text-slate-800 flex items-center">
+                <Users className="w-5 h-5 mr-2 text-indigo-600" />
+                Department Performance
+              </CardTitle>
+              <CardDescription className="text-slate-600">Performance metrics by department</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={employeePerformance} layout="horizontal">
+                    <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+                    <XAxis type="number" domain={[0, 100]} />
+                    <YAxis dataKey="department" type="category" width={80} />
+                    <Tooltip formatter={(value) => [`${value}%`, '']} />
+                    <Legend />
+                    <Bar dataKey="performance" fill="#6366F1" name="Actual Performance" />
+                    <Bar dataKey="target" fill="#10B981" name="Target Performance" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Existing content */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Recent Orders */}
           <Card className="border-slate-200 shadow-lg bg-white/95 backdrop-blur-sm">
