@@ -32,7 +32,8 @@ import {
   Cell, 
   Pie,
   AreaChart,
-  Area
+  Area,
+  ComposedChart
 } from 'recharts';
 
 const CompanyDashboard = () => {
@@ -101,14 +102,14 @@ const CompanyDashboard = () => {
     }
   };
 
-  // New chart data
+  // Enhanced chart data with proper formatting
   const monthlyRevenue = [
-    { month: 'Jan', revenue: 65000, target: 70000 },
-    { month: 'Feb', revenue: 59000, target: 70000 },
-    { month: 'Mar', revenue: 80000, target: 75000 },
-    { month: 'Apr', revenue: 81000, target: 75000 },
-    { month: 'May', revenue: 124500, target: 80000 },
-    { month: 'Jun', revenue: 95000, target: 85000 }
+    { month: 'Jan', revenue: 65000, target: 70000, growth: 8.5 },
+    { month: 'Feb', revenue: 59000, target: 70000, growth: -9.2 },
+    { month: 'Mar', revenue: 80000, target: 75000, growth: 35.6 },
+    { month: 'Apr', revenue: 81000, target: 75000, growth: 1.3 },
+    { month: 'May', revenue: 124500, target: 80000, growth: 53.7 },
+    { month: 'Jun', revenue: 95000, target: 85000, growth: -23.7 }
   ];
 
   const productionData = [
@@ -127,12 +128,110 @@ const CompanyDashboard = () => {
     { name: 'Cancelled', value: 2, color: '#EF4444' }
   ];
 
-  const employeePerformance = [
-    { department: 'Production', performance: 94, target: 90 },
-    { department: 'Quality', performance: 98, target: 95 },
-    { department: 'Maintenance', performance: 87, target: 85 },
-    { department: 'Logistics', performance: 91, target: 88 }
+  // Enhanced Department Performance data with proper structure
+  const departmentPerformance = [
+    { 
+      department: 'Production', 
+      current: 94, 
+      target: 90, 
+      efficiency: 96,
+      employees: 24,
+      improvement: 4.2
+    },
+    { 
+      department: 'Quality Control', 
+      current: 98, 
+      target: 95, 
+      efficiency: 99,
+      employees: 8,
+      improvement: 2.1
+    },
+    { 
+      department: 'Maintenance', 
+      current: 87, 
+      target: 85, 
+      efficiency: 89,
+      employees: 6,
+      improvement: 1.8
+    },
+    { 
+      department: 'Logistics', 
+      current: 91, 
+      target: 88, 
+      efficiency: 93,
+      employees: 10,
+      improvement: 3.4
+    }
   ];
+
+  // Custom tooltip components
+  const CustomRevenueTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white p-4 border border-gray-200 rounded-lg shadow-lg">
+          <p className="font-semibold text-gray-800">{`Month: ${label}`}</p>
+          <div className="space-y-2 mt-2">
+            {payload.map((entry: any, index: number) => (
+              <div key={index} className="flex items-center gap-2">
+                <div 
+                  className="w-3 h-3 rounded" 
+                  style={{ backgroundColor: entry.color }}
+                />
+                <span className="text-sm">
+                  {entry.dataKey === 'revenue' ? 'Revenue' : 'Target'}: 
+                  <span className="font-semibold ml-1">
+                    ${entry.value.toLocaleString()}
+                  </span>
+                </span>
+              </div>
+            ))}
+          </div>
+          {payload[0]?.payload?.growth && (
+            <div className="mt-2 pt-2 border-t border-gray-200">
+              <span className={`text-sm font-medium ${payload[0].payload.growth > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                Growth: {payload[0].payload.growth > 0 ? '+' : ''}{payload[0].payload.growth}%
+              </span>
+            </div>
+          )}
+        </div>
+      );
+    }
+    return null;
+  };
+
+  const CustomDepartmentTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      const data = payload[0]?.payload;
+      return (
+        <div className="bg-white p-4 border border-gray-200 rounded-lg shadow-lg min-w-[200px]">
+          <p className="font-semibold text-gray-800 mb-2">{label}</p>
+          <div className="space-y-1">
+            <div className="flex justify-between">
+              <span className="text-sm text-gray-600">Current Performance:</span>
+              <span className="font-semibold text-blue-600">{data?.current}%</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-sm text-gray-600">Target:</span>
+              <span className="font-semibold text-green-600">{data?.target}%</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-sm text-gray-600">Efficiency:</span>
+              <span className="font-semibold text-purple-600">{data?.efficiency}%</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-sm text-gray-600">Employees:</span>
+              <span className="font-semibold text-gray-700">{data?.employees}</span>
+            </div>
+            <div className="flex justify-between pt-2 border-t border-gray-200">
+              <span className="text-sm text-gray-600">Improvement:</span>
+              <span className="font-semibold text-emerald-600">+{data?.improvement}%</span>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className="space-y-6 relative">
@@ -170,35 +269,81 @@ const CompanyDashboard = () => {
           ))}
         </div>
 
-        {/* Charts Section */}
+        {/* Enhanced Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* Revenue vs Target Chart */}
+          {/* Enhanced Revenue vs Target Chart */}
           <Card className="border-slate-200 shadow-lg bg-white/95 backdrop-blur-sm">
             <CardHeader>
               <CardTitle className="text-slate-800 flex items-center">
-                <BarChart3 className="w-5 h-5 mr-2 text-blue-600" />
+                <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg mr-3">
+                  <BarChart3 className="w-5 h-5 text-white" />
+                </div>
                 Revenue vs Target
               </CardTitle>
-              <CardDescription className="text-slate-600">Monthly revenue performance against targets</CardDescription>
+              <CardDescription className="text-slate-600">
+                Monthly revenue performance with growth indicators
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="h-80">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={monthlyRevenue}>
+                  <ComposedChart data={monthlyRevenue} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                    <defs>
+                      <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="#3B82F6" stopOpacity={0.2}/>
+                      </linearGradient>
+                      <linearGradient id="targetGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#10B981" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="#10B981" stopOpacity={0.2}/>
+                      </linearGradient>
+                    </defs>
                     <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-                    <XAxis dataKey="month" />
-                    <YAxis />
-                    <Tooltip formatter={(value) => [`$${value.toLocaleString()}`, '']} />
+                    <XAxis 
+                      dataKey="month" 
+                      tick={{ fontSize: 12 }}
+                      axisLine={{ stroke: '#E2E8F0' }}
+                      tickLine={{ stroke: '#E2E8F0' }}
+                    />
+                    <YAxis 
+                      tick={{ fontSize: 12 }}
+                      axisLine={{ stroke: '#E2E8F0' }}
+                      tickLine={{ stroke: '#E2E8F0' }}
+                      tickFormatter={(value) => `$${(value / 1000).toFixed(0)}K`}
+                    />
+                    <Tooltip content={<CustomRevenueTooltip />} />
                     <Legend />
-                    <Bar dataKey="revenue" fill="#3B82F6" name="Actual Revenue" />
-                    <Bar dataKey="target" fill="#10B981" name="Target Revenue" />
-                  </BarChart>
+                    <Bar 
+                      dataKey="revenue" 
+                      fill="url(#revenueGradient)" 
+                      name="Actual Revenue"
+                      radius={[4, 4, 0, 0]}
+                      stroke="#3B82F6"
+                      strokeWidth={1}
+                    />
+                    <Bar 
+                      dataKey="target" 
+                      fill="url(#targetGradient)" 
+                      name="Target Revenue"
+                      radius={[4, 4, 0, 0]}
+                      stroke="#10B981"
+                      strokeWidth={1}
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="growth" 
+                      stroke="#F59E0B" 
+                      strokeWidth={3}
+                      dot={{ fill: '#F59E0B', strokeWidth: 2, r: 4 }}
+                      name="Growth %"
+                    />
+                  </ComposedChart>
                 </ResponsiveContainer>
               </div>
             </CardContent>
           </Card>
 
-          {/* Production Trend */}
+          {/* Production Trend - keeping existing design */}
           <Card className="border-slate-200 shadow-lg bg-white/95 backdrop-blur-sm">
             <CardHeader>
               <CardTitle className="text-slate-800 flex items-center">
@@ -249,7 +394,7 @@ const CompanyDashboard = () => {
 
         {/* Second Row of Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* Order Status Distribution */}
+          {/* Order Status Distribution - keeping existing */}
           <Card className="border-slate-200 shadow-lg bg-white/95 backdrop-blur-sm">
             <CardHeader>
               <CardTitle className="text-slate-800 flex items-center">
@@ -283,26 +428,70 @@ const CompanyDashboard = () => {
             </CardContent>
           </Card>
 
-          {/* Employee Performance */}
+          {/* Enhanced Department Performance */}
           <Card className="border-slate-200 shadow-lg bg-white/95 backdrop-blur-sm">
             <CardHeader>
               <CardTitle className="text-slate-800 flex items-center">
-                <Users className="w-5 h-5 mr-2 text-indigo-600" />
+                <div className="p-2 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg mr-3">
+                  <Users className="w-5 h-5 text-white" />
+                </div>
                 Department Performance
               </CardTitle>
-              <CardDescription className="text-slate-600">Performance metrics by department</CardDescription>
+              <CardDescription className="text-slate-600">
+                Comprehensive department metrics and targets
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="h-80">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={employeePerformance} layout="horizontal">
+                  <BarChart 
+                    data={departmentPerformance} 
+                    layout="horizontal"
+                    margin={{ top: 20, right: 30, left: 80, bottom: 5 }}
+                  >
                     <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-                    <XAxis type="number" domain={[0, 100]} />
-                    <YAxis dataKey="department" type="category" width={80} />
-                    <Tooltip formatter={(value) => [`${value}%`, '']} />
+                    <XAxis 
+                      type="number" 
+                      domain={[0, 100]} 
+                      tick={{ fontSize: 12 }}
+                      axisLine={{ stroke: '#E2E8F0' }}
+                      tickLine={{ stroke: '#E2E8F0' }}
+                      tickFormatter={(value) => `${value}%`}
+                    />
+                    <YAxis 
+                      dataKey="department" 
+                      type="category" 
+                      width={80}
+                      tick={{ fontSize: 11 }}
+                      axisLine={{ stroke: '#E2E8F0' }}
+                      tickLine={{ stroke: '#E2E8F0' }}
+                    />
+                    <Tooltip content={<CustomDepartmentTooltip />} />
                     <Legend />
-                    <Bar dataKey="performance" fill="#6366F1" name="Actual Performance" />
-                    <Bar dataKey="target" fill="#10B981" name="Target Performance" />
+                    <Bar 
+                      dataKey="current" 
+                      fill="#6366F1" 
+                      name="Current Performance"
+                      radius={[0, 4, 4, 0]}
+                      stroke="#4F46E5"
+                      strokeWidth={1}
+                    />
+                    <Bar 
+                      dataKey="target" 
+                      fill="#10B981" 
+                      name="Target Performance"
+                      radius={[0, 4, 4, 0]}
+                      stroke="#059669"
+                      strokeWidth={1}
+                    />
+                    <Bar 
+                      dataKey="efficiency" 
+                      fill="#8B5CF6" 
+                      name="Efficiency Rate"
+                      radius={[0, 4, 4, 0]}
+                      stroke="#7C3AED"
+                      strokeWidth={1}
+                    />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -310,7 +499,7 @@ const CompanyDashboard = () => {
           </Card>
         </div>
 
-        {/* Existing content */}
+        {/* Existing content - Recent Orders and Machine Status */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Recent Orders */}
           <Card className="border-slate-200 shadow-lg bg-white/95 backdrop-blur-sm">
