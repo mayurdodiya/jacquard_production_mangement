@@ -1,1 +1,1 @@
-https://jacqard.netlify.app/login
+live url :- https://jacqard.netlify.app/login
